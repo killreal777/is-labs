@@ -34,8 +34,8 @@ public class SpaceMarine {
     private LocalDate creationDate;
 
     @NotNull
-    @ManyToOne(optional = false, fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "chapter_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "chapter_id")
     private Chapter chapter;
 
     @NotNull
