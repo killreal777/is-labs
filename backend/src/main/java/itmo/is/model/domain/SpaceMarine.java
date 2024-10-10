@@ -28,14 +28,12 @@ public class SpaceMarine {
     @Embedded
     private Coordinates coordinates;
 
-    @NotNull
     @CreationTimestamp
-    @Column(name = "creation_date", nullable = false, updatable = false)
+    @Column(name = "creation_date", updatable = false)
     private LocalDate creationDate;
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "chapter_id")
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+    @JoinColumn(name = "chapter_id", nullable = true)
     private Chapter chapter;
 
     @NotNull

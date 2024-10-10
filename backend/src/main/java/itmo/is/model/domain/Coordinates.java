@@ -5,6 +5,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 @Embeddable
+@Builder
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,7 +15,7 @@ public class Coordinates {
     @Column(nullable = false)
     private Long x;
 
-    @NotEmpty
+    @NotNull
     @Column(nullable = false)
     private Float y;
 }
