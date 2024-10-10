@@ -17,7 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfigFilterChain {
-    private static final String[] WHITE_LIST_URL = {"/api/auth/**"};
+    private static final String[] WHITE_LIST_URL = {"/api/auth/**", "api/space-marines/**"};
 
     private final AuthenticationProvider authenticationProvider;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -29,7 +29,7 @@ public class SecurityConfigFilterChain {
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(WHITE_LIST_URL).permitAll()
                                 .requestMatchers(HttpMethod.GET).permitAll()
-                                .requestMatchers(HttpMethod.POST).authenticated()
+                                .requestMatchers(HttpMethod.POST).permitAll()
                                 .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
                                 .anyRequest().authenticated()
                 )

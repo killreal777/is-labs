@@ -3,7 +3,6 @@ package itmo.is.service;
 import itmo.is.dto.authentication.LoginRequest;
 import itmo.is.dto.authentication.JwtResponse;
 import itmo.is.dto.authentication.RegisterRequest;
-import itmo.is.model.security.Role;
 import itmo.is.model.security.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
