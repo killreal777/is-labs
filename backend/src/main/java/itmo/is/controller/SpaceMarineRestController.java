@@ -29,7 +29,6 @@ public class SpaceMarineRestController {
 
     @PostMapping
     public ResponseEntity<SpaceMarineDto> save(@RequestBody CreateSpaceMarineRequest request) {
-        log.info("Save space marine request: {}", request);
         return ResponseEntity.ok(spaceMarineService.save(request));
     }
 
