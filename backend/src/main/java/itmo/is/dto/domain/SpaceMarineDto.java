@@ -1,5 +1,7 @@
 package itmo.is.dto.domain;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public record SpaceMarineDto(
         Long id,
         String name,
@@ -8,6 +10,8 @@ public record SpaceMarineDto(
         Double health,
         boolean loyal,
         Integer height,
-        AstartesCategoryDto category
+        AstartesCategoryDto category,
+        @JsonProperty("admin_edit_allowed")
+        boolean adminEditAllowed
 ) {
 }

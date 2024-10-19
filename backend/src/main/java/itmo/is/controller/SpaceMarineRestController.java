@@ -34,6 +34,7 @@ public class SpaceMarineRestController {
         return ResponseEntity.ok(spaceMarineService.save(request));
     }
 
+    @PreAuthorize("@spaceMarineSecurityService.hasEditRights(#request.id)")
     @PutMapping
     public ResponseEntity<SpaceMarineDto> update(@RequestBody UpdateSpaceMarineRequest request) {
         return ResponseEntity.ok(spaceMarineService.update(request));

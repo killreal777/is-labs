@@ -52,6 +52,9 @@ public class SpaceMarine {
     @Column(name = "height", nullable = false)
     private Integer height;
 
+    @Column(name = "admin_edit_allowed")
+    private boolean adminEditAllowed;
+
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "astartes_category", nullable = false)
