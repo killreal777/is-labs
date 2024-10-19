@@ -2,6 +2,7 @@ package itmo.is.controller;
 
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
+import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
 import itmo.is.service.SpaceMarineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,11 @@ public class SpaceMarineRestController {
     @PostMapping
     public ResponseEntity<SpaceMarineDto> save(@RequestBody CreateSpaceMarineRequest request) {
         return ResponseEntity.ok(spaceMarineService.save(request));
+    }
+
+    @PutMapping
+    public ResponseEntity<SpaceMarineDto> update(@RequestBody UpdateSpaceMarineRequest request) {
+        return ResponseEntity.ok(spaceMarineService.update(request));
     }
 
     @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")

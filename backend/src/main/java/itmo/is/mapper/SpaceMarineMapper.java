@@ -2,6 +2,7 @@ package itmo.is.mapper;
 
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
+import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
 import itmo.is.model.domain.SpaceMarine;
 import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
@@ -15,6 +16,8 @@ import java.util.List;
 )
 public interface SpaceMarineMapper extends EntityMapper<SpaceMarineDto, SpaceMarine> {
     SpaceMarine toEntity(CreateSpaceMarineRequest request);
+
+    SpaceMarine toEntity(UpdateSpaceMarineRequest request);
 
     @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
     List<SpaceMarineDto> toDto(List<SpaceMarine> spaceMarines);

@@ -2,6 +2,7 @@ package itmo.is.service;
 
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
+import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
 import itmo.is.mapper.SpaceMarineMapper;
 import itmo.is.repository.SpaceMarineRepository;
 import jakarta.transaction.Transactional;
@@ -36,6 +37,12 @@ public class SpaceMarineService {
         var dto = spaceMarineMapper.toDto(saved);
         log.info("Mapped DTO: {}", dto);
         return dto;
+    }
+
+    public SpaceMarineDto update(UpdateSpaceMarineRequest request) {
+        var spaceMarine = spaceMarineMapper.toEntity(request);
+        var saved = spaceMarineRepository.save(spaceMarine);
+        return spaceMarineMapper.toDto(saved);
     }
 
     public void deleteById(Long id) {
