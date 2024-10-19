@@ -4,6 +4,7 @@ import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.mapper.SpaceMarineMapper;
 import itmo.is.repository.SpaceMarineRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import java.util.List;
 
 @Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class SpaceMarineService {
     private final SpaceMarineRepository spaceMarineRepository;
