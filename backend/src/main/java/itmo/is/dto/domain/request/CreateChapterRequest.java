@@ -1,4 +1,12 @@
 package itmo.is.dto.domain.request;
 
-public record CreateChapterRequest() {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record CreateChapterRequest(
+        @JsonProperty("name")
+        String name,
+
+        @JsonProperty("parent_legion")
+        String parentLegion
+) {
 }

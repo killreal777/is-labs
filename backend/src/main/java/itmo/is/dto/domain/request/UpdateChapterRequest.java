@@ -1,8 +1,8 @@
-package itmo.is.dto.domain;
+package itmo.is.dto.domain.request;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record ChapterDto(
+public record UpdateChapterRequest(
         @JsonProperty("id")
         Long id,
 
@@ -11,9 +11,6 @@ public record ChapterDto(
 
         @JsonProperty("parent_legion")
         String parentLegion,
-
-        @JsonProperty("marines_count")
-        long marinesCount,
 
         @JsonProperty("admin_edit_allowed")
         boolean adminEditAllowed
