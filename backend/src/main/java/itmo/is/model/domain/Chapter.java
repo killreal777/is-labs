@@ -27,4 +27,15 @@ public class Chapter extends OwnedEntity {
     @Min(0) @Max(1000)
     @Column(name = "marines_count")
     private long marinesCount;
+
+    public void incrementMarinesCount() {
+        marinesCount++;
+    }
+
+    public void decrementMarinesCount() {
+        if (marinesCount == 0) {
+            throw new IllegalStateException("Cannot decrement marines count");
+        }
+        marinesCount--;
+    }
 }

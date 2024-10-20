@@ -4,9 +4,11 @@ import itmo.is.model.security.OwnedEntity;
 import itmo.is.model.security.Role;
 import itmo.is.model.security.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public abstract class OwnerEntitySecurityService<T extends OwnedEntity, ID> {
