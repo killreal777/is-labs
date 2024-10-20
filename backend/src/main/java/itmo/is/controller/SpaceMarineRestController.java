@@ -66,4 +66,18 @@ public class SpaceMarineRestController {
     ) {
         return ResponseEntity.ok(spaceMarineService.findAllByNameContaining(substring, pageable));
     }
+
+    @GetMapping("/loyal")
+    public ResponseEntity<Page<SpaceMarineDto>> findAllLoyal(
+            @PageableDefault(size = 10, page = 0) Pageable pageable
+    ) {
+        return ResponseEntity.ok(spaceMarineService.findAllLoyal(pageable));
+    }
+
+    @GetMapping("/disloyal")
+    public ResponseEntity<Page<SpaceMarineDto>> findAllDisloyal(
+            @PageableDefault(size = 10, page = 0) Pageable pageable
+    ) {
+        return ResponseEntity.ok(spaceMarineService.findAllDisloyal(pageable));
+    }
 }

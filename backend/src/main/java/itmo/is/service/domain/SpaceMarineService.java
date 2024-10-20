@@ -62,4 +62,12 @@ public class SpaceMarineService {
     public Page<SpaceMarineDto> findAllByNameContaining(String substring, Pageable pageable) {
         return spaceMarineRepository.findAllByNameContaining(substring, pageable).map(spaceMarineMapper::toDto);
     }
+
+    public Page<SpaceMarineDto> findAllLoyal(Pageable pageable) {
+        return spaceMarineRepository.findAllByLoyal(true, pageable).map(spaceMarineMapper::toDto);
+    }
+
+    public Page<SpaceMarineDto> findAllDisloyal(Pageable pageable) {
+        return spaceMarineRepository.findAllByLoyal(false, pageable).map(spaceMarineMapper::toDto);
+    }
 }

@@ -23,4 +23,7 @@ public interface SpaceMarineRepository extends JpaRepository<SpaceMarine, Intege
 
     @Query("SELECT sm.creationDate, COUNT(sm) FROM SpaceMarine sm GROUP BY sm.creationDate")
     List<Object[]> countByCreationDateGrouped();
+
+
+    Page<SpaceMarine> findAllByLoyal(@NonNull boolean loyal, @NonNull Pageable pageable);
 }
