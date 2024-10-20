@@ -5,11 +5,12 @@ import itmo.is.dto.domain.request.CreateChapterRequest;
 import itmo.is.dto.domain.request.UpdateChapterRequest;
 import itmo.is.service.domain.ChapterService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("api/chapters")
@@ -18,8 +19,8 @@ public class ChapterRestController {
     private final ChapterService chapterService;
 
     @GetMapping
-    public ResponseEntity<List<ChapterDto>> findAll() {
-        return ResponseEntity.ok(chapterService.findAll());
+    public ResponseEntity<Page<ChapterDto>> findAll(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(chapterService.findAll(pageable));
     }
 
     @GetMapping("/{id}")

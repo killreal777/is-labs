@@ -9,6 +9,8 @@ import itmo.is.model.security.Role;
 import itmo.is.model.security.User;
 import itmo.is.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -79,8 +81,8 @@ public class AuthenticationService {
         userRepository.delete(user);
     }
 
-    public List<UserDto> getPendingRegistrationRequests() {
-        return userMapper.toDto(userRepository.findByEnabledFalse());
+    public Page<UserDto> getPendingRegistrationRequests(Pageable pageable) {
+        return userRepository.findAllByEnabledFalse(pageable).map(userMapper::toDto);
     }
 
     private JwtResponse registerEnabled(RegisterRequest request, Role role) {

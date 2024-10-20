@@ -7,9 +7,9 @@ import itmo.is.mapper.ChapterMapper;
 import itmo.is.repository.ChapterRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @Transactional
@@ -18,8 +18,8 @@ public class ChapterService {
     private final ChapterRepository chapterRepository;
     private final ChapterMapper chapterMapper;
 
-    public List<ChapterDto> findAll() {
-        return chapterMapper.toDto(chapterRepository.findAll());
+    public Page<ChapterDto> findAll(Pageable pageable) {
+        return chapterRepository.findAll(pageable).map(chapterMapper::toDto);
     }
 
     public ChapterDto findById(Long id) {

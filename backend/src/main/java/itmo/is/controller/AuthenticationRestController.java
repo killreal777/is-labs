@@ -5,6 +5,9 @@ import itmo.is.dto.authentication.RegisterRequest;
 import itmo.is.dto.authentication.UserDto;
 import itmo.is.service.security.authentication.AuthenticationService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -49,7 +52,7 @@ public class AuthenticationRestController {
     }
 
     @GetMapping("admin/registration-requests")
-    public ResponseEntity<List<UserDto>> getPendingRegistrationRequests() {
-        return ResponseEntity.ok(authenticationService.getPendingRegistrationRequests());
+    public ResponseEntity<Page<UserDto>> getPendingRegistrationRequests(@PageableDefault Pageable pageable) {
+        return ResponseEntity.ok(authenticationService.getPendingRegistrationRequests(pageable));
     }
 }

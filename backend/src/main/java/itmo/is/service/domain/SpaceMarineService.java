@@ -8,9 +8,9 @@ import itmo.is.repository.SpaceMarineRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -20,8 +20,8 @@ public class SpaceMarineService {
     private final SpaceMarineRepository spaceMarineRepository;
     private final SpaceMarineMapper spaceMarineMapper;
 
-    public List<SpaceMarineDto> findAll() {
-        return spaceMarineMapper.toDto(spaceMarineRepository.findAll());
+    public Page<SpaceMarineDto> findAll(Pageable pageable) {
+        return spaceMarineRepository.findAll(pageable).map(spaceMarineMapper::toDto);
     }
 
     public SpaceMarineDto findById(Long id) {

@@ -2,10 +2,12 @@ package itmo.is.repository;
 
 import itmo.is.model.security.Role;
 import itmo.is.model.security.User;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -16,5 +18,5 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     boolean existsByRole(Role role);
 
-    List<User> findByEnabledFalse();
+    Page<User> findAllByEnabledFalse(@NonNull Pageable pageable);
 }
