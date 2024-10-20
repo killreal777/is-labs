@@ -13,8 +13,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @Slf4j
 @RestController
 @RequestMapping("api/space-marines")
@@ -23,8 +21,11 @@ public class SpaceMarineRestController {
     private final SpaceMarineService spaceMarineService;
 
     @GetMapping
-    public ResponseEntity<Page<SpaceMarineDto>> findAll(@PageableDefault(page = 1) Pageable pageable) {
-        return ResponseEntity.ok(spaceMarineService.findAll(pageable));
+    public ResponseEntity<Page<SpaceMarineDto>> findAll(
+            @RequestParam(required = false) String name,
+            @PageableDefault(size = 10, page = 0) Pageable pageable
+    ) {
+        return ResponseEntity.ok(spaceMarineService.findAll(name, pageable));
     }
 
     @GetMapping("/{id}")

@@ -19,8 +19,12 @@ public class ChapterRestController {
     private final ChapterService chapterService;
 
     @GetMapping
-    public ResponseEntity<Page<ChapterDto>> findAll(@PageableDefault Pageable pageable) {
-        return ResponseEntity.ok(chapterService.findAll(pageable));
+    public ResponseEntity<Page<ChapterDto>> findAll(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) String parentLegion,
+            @PageableDefault(size = 10, page = 0) Pageable pageable
+    ) {
+        return ResponseEntity.ok(chapterService.findAll(name, parentLegion, pageable));
     }
 
     @GetMapping("/{id}")

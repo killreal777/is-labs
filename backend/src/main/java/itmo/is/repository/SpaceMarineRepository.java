@@ -1,14 +1,19 @@
 package itmo.is.repository;
 
 import itmo.is.model.domain.SpaceMarine;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.lang.NonNull;
 import org.springframework.stereotype.Repository;
+
+import java.util.Optional;
 
 @Repository
 public interface SpaceMarineRepository extends JpaRepository<SpaceMarine, Integer> {
-    SpaceMarine findById(Long id);
+    Page<SpaceMarine> findAllByName(@NonNull String name, @NonNull Pageable pageable);
 
-    SpaceMarine save(SpaceMarine spaceMarine);
+    Optional<SpaceMarine> findById(Long id);
 
     void deleteById(Long id);
 }

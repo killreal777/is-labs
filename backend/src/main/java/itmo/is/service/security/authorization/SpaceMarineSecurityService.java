@@ -12,6 +12,6 @@ public class SpaceMarineSecurityService extends OwnerEntitySecurityService<Space
 
     @Override
     protected SpaceMarine findById(Long id) {
-        return spaceMarineRepository.findById(id);
+        return spaceMarineRepository.findById(id).orElseThrow();
     }
 }

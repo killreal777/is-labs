@@ -15,30 +15,39 @@ import org.springframework.stereotype.Service;
 @Transactional
 @RequiredArgsConstructor
 public class ChapterService {
-    private final ChapterRepository chapterRepository;
-    private final ChapterMapper chapterMapper;
+    private final ChapterRepository repository;
+    private final ChapterMapper mapper;
 
-    public Page<ChapterDto> findAll(Pageable pageable) {
-        return chapterRepository.findAll(pageable).map(chapterMapper::toDto);
+    public Page<ChapterDto> findAll(String name, String parentLegion, Pageable pageable) {
+        if (name != null && parentLegion != null) {
+            return repository.findAllByNameAndParentLegion(name, parentLegion, pageable).map(mapper::toDto);
+        }
+        if (name != null) {
+            return repository.findAllByName(name, pageable).map(mapper::toDto);
+        }
+        if (parentLegion != null) {
+            return repository.findAllByParentLegion(parentLegion, pageable).map(mapper::toDto);
+        }
+        return repository.findAll(pageable).map(mapper::toDto);
     }
 
     public ChapterDto findById(Long id) {
-        return chapterMapper.toDto(chapterRepository.findById(id).orElseThrow());
+        return mapper.toDto(repository.findById(id).orElseThrow());
     }
 
     public ChapterDto save(CreateChapterRequest request) {
-        var spaceMarine = chapterMapper.toEntity(request);
-        var saved = chapterRepository.save(spaceMarine);
-        return chapterMapper.toDto(saved);
+        var spaceMarine = mapper.toEntity(request);
+        var saved = repository.save(spaceMarine);
+        return mapper.toDto(saved);
     }
 
     public ChapterDto update(UpdateChapterRequest request) {
-        var spaceMarine = chapterMapper.toEntity(request);
-        var saved = chapterRepository.save(spaceMarine);
-        return chapterMapper.toDto(saved);
+        var spaceMarine = mapper.toEntity(request);
+        var saved = repository.save(spaceMarine);
+        return mapper.toDto(saved);
     }
 
     public void deleteById(Long id) {
-        chapterRepository.deleteById(id);
+        repository.deleteById(id);
     }
 }
