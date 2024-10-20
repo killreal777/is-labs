@@ -1,6 +1,12 @@
 package itmo.is.dto.authentication;
 
-import itmo.is.model.security.Role;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record RegisterRequest(String username, String password, Role role) {
+public record RegisterRequest(
+        @JsonProperty("username")
+        String username,
+
+        @JsonProperty("password")
+        String password
+) {
 }

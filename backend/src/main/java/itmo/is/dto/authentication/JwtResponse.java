@@ -1,5 +1,10 @@
 package itmo.is.dto.authentication;
 
-public record JwtResponse(String accessToken) {
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+public record JwtResponse(
+        @JsonProperty("access_token")
+        String accessToken
+) {
 }
 
