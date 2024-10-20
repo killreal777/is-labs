@@ -12,6 +12,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 @Slf4j
 @Service
 @Transactional
@@ -45,5 +49,13 @@ public class SpaceMarineService {
 
     public void deleteById(Long id) {
         spaceMarineRepository.deleteById(id);
+    }
+
+    public Map<LocalDate, Integer> getSpaceMarineCountByCreationDate() {
+        return spaceMarineRepository.countByCreationDateGrouped().stream()
+                .collect(Collectors.toMap(
+                        result -> (LocalDate) result[0],
+                        result -> ((Long) result[1]).intValue()
+                ));
     }
 }

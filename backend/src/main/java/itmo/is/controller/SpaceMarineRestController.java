@@ -13,6 +13,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.Map;
+
 @Slf4j
 @RestController
 @RequestMapping("api/space-marines")
@@ -49,5 +52,10 @@ public class SpaceMarineRestController {
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         spaceMarineService.deleteById(id);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/grouped-by-creation-date")
+    public ResponseEntity<Map<LocalDate, Integer>> getGroupedByCreationDate() {
+        return ResponseEntity.ok(spaceMarineService.getSpaceMarineCountByCreationDate());
     }
 }
