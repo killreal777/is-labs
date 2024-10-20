@@ -1,24 +1,20 @@
 package itmo.is.model.domain;
 
-import itmo.is.model.security.User;
+import itmo.is.model.security.OwnedEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedBy;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(name = "marines")
-@EntityListeners(AuditingEntityListener.class)
-@Builder
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class SpaceMarine {
+public class SpaceMarine extends OwnedEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -52,16 +48,8 @@ public class SpaceMarine {
     @Column(name = "height", nullable = false)
     private Integer height;
 
-    @Column(name = "admin_edit_allowed")
-    private boolean adminEditAllowed;
-
     @NotNull
     @Enumerated(EnumType.STRING)
     @Column(name = "astartes_category", nullable = false)
     private AstartesCategory category;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by", nullable = false, updatable = false)
-    @CreatedBy
-    private User createdBy;
 }
