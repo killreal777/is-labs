@@ -1,4 +1,4 @@
-package itmo.is.service;
+package itmo.is.service.domain;
 
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;

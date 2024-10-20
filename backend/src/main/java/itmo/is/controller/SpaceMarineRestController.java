@@ -3,7 +3,7 @@ package itmo.is.controller;
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
-import itmo.is.service.SpaceMarineService;
+import itmo.is.service.domain.SpaceMarineService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;

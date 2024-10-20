@@ -1,12 +1,9 @@
 package itmo.is.controller;
 
 import itmo.is.dto.domain.ChapterDto;
-import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateChapterRequest;
-import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.dto.domain.request.UpdateChapterRequest;
-import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
-import itmo.is.service.ChapterService;
+import itmo.is.service.domain.ChapterService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;

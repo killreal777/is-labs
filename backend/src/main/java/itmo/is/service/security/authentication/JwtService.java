@@ -1,4 +1,4 @@
-package itmo.is.service;
+package itmo.is.service.security.authentication;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,9 +1,10 @@
-package itmo.is.service;
+package itmo.is.service.security.authentication;
 
 import itmo.is.dto.authentication.LoginRequest;
 import itmo.is.dto.authentication.JwtResponse;
 import itmo.is.dto.authentication.RegisterRequest;
 import itmo.is.model.security.User;
+import itmo.is.service.security.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

@@ -1,4 +1,4 @@
-package itmo.is.service;
+package itmo.is.service.security.authorization;
 
 import itmo.is.model.security.OwnedEntity;
 import itmo.is.model.security.Role;

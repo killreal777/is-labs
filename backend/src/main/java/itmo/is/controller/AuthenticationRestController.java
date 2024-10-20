@@ -2,7 +2,7 @@ package itmo.is.controller;
 import itmo.is.dto.authentication.LoginRequest;
 import itmo.is.dto.authentication.JwtResponse;
 import itmo.is.dto.authentication.RegisterRequest;
-import itmo.is.service.AuthenticationService;
+import itmo.is.service.security.authentication.AuthenticationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

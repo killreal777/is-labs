@@ -1,6 +1,6 @@
 package itmo.is.filter;
 
-import itmo.is.service.JwtService;
+import itmo.is.service.security.authentication.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

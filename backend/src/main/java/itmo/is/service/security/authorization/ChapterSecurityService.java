@@ -1,4 +1,4 @@
-package itmo.is.service;
+package itmo.is.service.security.authorization;
 
 import itmo.is.model.domain.Chapter;
 import itmo.is.repository.ChapterRepository;
