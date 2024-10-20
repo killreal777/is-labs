@@ -50,4 +50,8 @@ public class ChapterService {
     public void deleteById(Long id) {
         repository.deleteById(id);
     }
+
+    public Page<ChapterDto> findAllByNameContaining(String substring, Pageable pageable) {
+        return repository.findAllByNameContaining(substring, pageable).map(mapper::toDto);
+    }
 }

@@ -58,4 +58,12 @@ public class SpaceMarineRestController {
     public ResponseEntity<Map<LocalDate, Integer>> getGroupedByCreationDate() {
         return ResponseEntity.ok(spaceMarineService.getSpaceMarineCountByCreationDate());
     }
+
+    @GetMapping("/name-containing")
+    public ResponseEntity<Page<SpaceMarineDto>> findAllByNameContaining(
+            @RequestParam String substring,
+            @PageableDefault(size = 10, page = 0) Pageable pageable
+    ) {
+        return ResponseEntity.ok(spaceMarineService.findAllByNameContaining(substring, pageable));
+    }
 }

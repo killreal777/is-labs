@@ -14,4 +14,6 @@ public interface ChapterRepository extends JpaRepository<Chapter, Long> {
     Page<Chapter> findAllByParentLegion(@NonNull String parentLegion, @NonNull Pageable pageable);
 
     Page<Chapter> findAllByNameAndParentLegion(@NonNull String name, @NonNull String parentLegion, @NonNull Pageable pageable);
+
+    Page<Chapter> findAllByNameContaining(@NonNull String substring, @NonNull Pageable pageable);
 }

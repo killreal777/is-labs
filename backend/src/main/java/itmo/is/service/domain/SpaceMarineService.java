@@ -58,4 +58,8 @@ public class SpaceMarineService {
                         result -> ((Long) result[1]).intValue()
                 ));
     }
+
+    public Page<SpaceMarineDto> findAllByNameContaining(String substring, Pageable pageable) {
+        return spaceMarineRepository.findAllByNameContaining(substring, pageable).map(spaceMarineMapper::toDto);
+    }
 }

@@ -15,6 +15,8 @@ import java.util.Optional;
 public interface SpaceMarineRepository extends JpaRepository<SpaceMarine, Integer> {
     Page<SpaceMarine> findAllByName(@NonNull String name, @NonNull Pageable pageable);
 
+    Page<SpaceMarine> findAllByNameContaining(@NonNull String substring, @NonNull Pageable pageable);
+
     Optional<SpaceMarine> findById(Long id);
 
     void deleteById(Long id);

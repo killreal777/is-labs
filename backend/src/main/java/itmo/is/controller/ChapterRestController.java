@@ -49,4 +49,12 @@ public class ChapterRestController {
         chapterService.deleteById(id);
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/name-containing")
+    public ResponseEntity<Page<ChapterDto>> findAllByNameContaining(
+            @RequestParam String substring,
+            @PageableDefault(size = 10, page = 0) Pageable pageable
+    ) {
+        return ResponseEntity.ok(chapterService.findAllByNameContaining(substring, pageable));
+    }
 }
