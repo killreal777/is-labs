@@ -11,22 +11,22 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/api")
 @RequiredArgsConstructor
 public class AuthenticationRestController {
     private final AuthenticationService authenticationService;
 
-    @PostMapping("login")
+    @PostMapping("/auth/login")
     public ResponseEntity<JwtResponse> login(@RequestBody LoginRequest request) {
         return ResponseEntity.ok(authenticationService.authenticate(request));
     }
 
-    @PostMapping("register")
+    @PostMapping("/auth/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
         return ResponseEntity.ok(authenticationService.registerUser(request));
     }
 
-    @PostMapping("admin/register")
+    @PostMapping("/auth/register/admin")
     public ResponseEntity<JwtResponse> registerAdmin(@RequestBody RegisterRequest request) {
         if (authenticationService.hasRegisteredAdmins()) {
             authenticationService.submitAdminRegistrationRequest(request);
@@ -36,19 +36,19 @@ public class AuthenticationRestController {
         }
     }
 
-    @PutMapping("admin/register/{userId}")
+    @PutMapping("admin/registration-requests/{userId}")
     public ResponseEntity<Void> approveAdminRegistrationRequest(@PathVariable Long userId) {
         authenticationService.approveAdminRegistrationRequest(userId);
         return ResponseEntity.ok().build();
     }
 
-    @DeleteMapping("admin/register/{userId}")
+    @DeleteMapping("admin/registration-requests/{userId}")
     public ResponseEntity<Void> rejectAdminRegistrationRequest(@PathVariable Long userId) {
         authenticationService.rejectAdminRegistrationRequest(userId);
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("admin/register")
+    @GetMapping("admin/registration-requests")
     public ResponseEntity<List<UserDto>> getPendingRegistrationRequests() {
         return ResponseEntity.ok(authenticationService.getPendingRegistrationRequests());
     }
