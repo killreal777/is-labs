@@ -147,7 +147,7 @@ public class AuthenticationService {
         if (uniquePasswordConstraint) {
             String encodedPassword = passwordEncoder.encode(password);
             userRepository.findByPassword(encodedPassword).ifPresent((user) -> {
-                String message = "Password " + password + " is already taken by user " + user.getUsername();
+                String message = "Password '" + password + "' is already taken by user '" + user.getUsername() + "'";
                 throw new AuthenticationServiceException(message);
             });
         }
