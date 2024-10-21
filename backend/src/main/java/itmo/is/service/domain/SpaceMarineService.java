@@ -4,6 +4,9 @@ import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
 import itmo.is.mapper.domain.SpaceMarineMapper;
+import itmo.is.model.domain.Chapter;
+import itmo.is.model.domain.SpaceMarine;
+import itmo.is.repository.ChapterRepository;
 import itmo.is.repository.SpaceMarineRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 public class SpaceMarineService {
     private final SpaceMarineRepository spaceMarineRepository;
     private final SpaceMarineMapper spaceMarineMapper;
+    private final ChapterRepository chapterRepository;
 
     public Page<SpaceMarineDto> findAll(String name, Pageable pageable) {
         if (name != null) {
@@ -62,6 +66,30 @@ public class SpaceMarineService {
         var spaceMarine = spaceMarineRepository.findById(id).orElseThrow();
         spaceMarine.setAdminEditAllowed(false);
         spaceMarineRepository.save(spaceMarine);
+    }
+
+    public void enroll(Long spaceMarineId, Long chapterId) {
+        SpaceMarine spaceMarine = spaceMarineRepository.findById(spaceMarineId).orElseThrow();
+        if (spaceMarine.getChapter() != null) {
+            throw new IllegalStateException("Space Marine already has a chapter");
+        }
+        Chapter chapter = chapterRepository.findById(chapterId).orElseThrow();
+        spaceMarine.setChapter(chapter);
+        chapter.incrementMarinesCount();
+        spaceMarineRepository.save(spaceMarine);
+        chapterRepository.save(chapter);
+    }
+
+    public void expel(Long spaceMarineId) {
+        SpaceMarine spaceMarine = spaceMarineRepository.findById(spaceMarineId).orElseThrow();
+        if (spaceMarine.getChapter() == null) {
+            throw new IllegalStateException("Space Marine does not have a chapter");
+        }
+        Chapter chapter = spaceMarine.getChapter();
+        spaceMarine.setChapter(null);
+        chapter.decrementMarinesCount();
+        spaceMarineRepository.save(spaceMarine);
+        chapterRepository.save(chapter);
     }
 
     public Map<LocalDate, Integer> getSpaceMarineCountByCreationDate() {

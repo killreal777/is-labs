@@ -2,8 +2,6 @@ package itmo.is.controller;
 
 import itmo.is.dto.domain.ChapterDto;
 import itmo.is.dto.domain.request.CreateChapterRequest;
-import itmo.is.dto.domain.request.EnrollRequest;
-import itmo.is.dto.domain.request.ExpelRequest;
 import itmo.is.dto.domain.request.UpdateChapterRequest;
 import itmo.is.service.domain.ChapterService;
 import lombok.RequiredArgsConstructor;
@@ -75,19 +73,5 @@ public class ChapterRestController {
             @PageableDefault(size = 10, page = 0) Pageable pageable
     ) {
         return ResponseEntity.ok(chapterService.findAllByNameContaining(substring, pageable));
-    }
-
-    @PreAuthorize("@spaceMarineSecurityService.hasEditRights(#request.spaceMarineId())")
-    @PutMapping("/enroll")
-    public ResponseEntity<Void> enroll(@RequestBody EnrollRequest request) {
-        chapterService.enroll(request);
-        return ResponseEntity.ok().build();
-    }
-
-    @PreAuthorize("@spaceMarineSecurityService.hasEditRights(#request.spaceMarineId())")
-    @PutMapping("expel")
-    public ResponseEntity<Void> expel(@RequestBody ExpelRequest request) {
-        chapterService.expel(request);
-        return ResponseEntity.ok().build();
     }
 }

@@ -71,6 +71,20 @@ public class SpaceMarineRestController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("@spaceMarineSecurityService.hasEditRights(#spaceMarineId)")
+    @PatchMapping("/{spaceMarineId}/enroll")
+    public ResponseEntity<Void> enroll(@PathVariable Long spaceMarineId, @RequestParam Long chapterId) {
+        spaceMarineService.enroll(spaceMarineId, chapterId);
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("@spaceMarineSecurityService.hasEditRights(#spaceMarineId)")
+    @PatchMapping("/{spaceMarineId}/expel")
+    public ResponseEntity<Void> expel(@PathVariable Long spaceMarineId) {
+        spaceMarineService.expel(spaceMarineId);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/grouped-by-creation-date")
     public ResponseEntity<Map<LocalDate, Integer>> getGroupedByCreationDate() {
         return ResponseEntity.ok(spaceMarineService.getSpaceMarineCountByCreationDate());
