@@ -7,9 +7,6 @@ public record UserDto(
         Long id,
 
         @JsonProperty("username")
-        String username,
-
-        @JsonProperty("password")
-        String password
+        String username
 ) {
 }
