@@ -21,9 +21,6 @@ public record UpdateSpaceMarineRequest(
         Integer height,
 
         @JsonProperty(value = "category", required = false)
-        AstartesCategory category,
-
-        @JsonProperty(value = "admin_edit_allowed", required = true)
-        boolean adminEditAllowed
+        AstartesCategory category
 ) {
 }

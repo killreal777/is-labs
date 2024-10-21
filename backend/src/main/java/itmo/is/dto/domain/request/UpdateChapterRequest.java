@@ -7,9 +7,6 @@ public record UpdateChapterRequest(
         String name,
 
         @JsonProperty(value = "parent_legion", required = false)
-        String parentLegion,
-
-        @JsonProperty(value = "admin_edit_allowed", required = true)
-        boolean adminEditAllowed
+        String parentLegion
 ) {
 }

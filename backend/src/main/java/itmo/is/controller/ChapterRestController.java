@@ -55,6 +55,20 @@ public class ChapterRestController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")
+    @DeleteMapping("/{id}/admin-editing/allow")
+    public ResponseEntity<Void> allowAdminEditing(@PathVariable Long id) {
+        chapterService.allowAdminEditing(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")
+    @DeleteMapping("/{id}/admin-editing/deny")
+    public ResponseEntity<Void> denyAdminEditing(@PathVariable Long id) {
+        chapterService.denyAdminEditing(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/name-containing")
     public ResponseEntity<Page<ChapterDto>> findAllByNameContaining(
             @RequestParam String substring,

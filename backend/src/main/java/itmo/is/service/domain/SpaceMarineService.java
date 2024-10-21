@@ -52,6 +52,18 @@ public class SpaceMarineService {
         spaceMarineRepository.deleteById(id);
     }
 
+    public void allowAdminEditing(Long id) {
+        var spaceMarine = spaceMarineRepository.findById(id).orElseThrow();
+        spaceMarine.setAdminEditAllowed(true);
+        spaceMarineRepository.save(spaceMarine);
+    }
+
+    public void denyAdminEditing(Long id) {
+        var spaceMarine = spaceMarineRepository.findById(id).orElseThrow();
+        spaceMarine.setAdminEditAllowed(false);
+        spaceMarineRepository.save(spaceMarine);
+    }
+
     public Map<LocalDate, Integer> getSpaceMarineCountByCreationDate() {
         return spaceMarineRepository.countByCreationDateGrouped().stream()
                 .collect(Collectors.toMap(

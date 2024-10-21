@@ -58,6 +58,18 @@ public class ChapterService {
         chapterRepository.deleteById(id);
     }
 
+    public void allowAdminEditing(Long id) {
+        var chapter = chapterRepository.findById(id).orElseThrow();
+        chapter.setAdminEditAllowed(true);
+        chapterRepository.save(chapter);
+    }
+
+    public void denyAdminEditing(Long id) {
+        var chapter = chapterRepository.findById(id).orElseThrow();
+        chapter.setAdminEditAllowed(false);
+        chapterRepository.save(chapter);
+    }
+
     public Page<ChapterDto> findAllByNameContaining(String substring, Pageable pageable) {
         return chapterRepository.findAllByNameContaining(substring, pageable).map(chapterMapper::toDto);
     }

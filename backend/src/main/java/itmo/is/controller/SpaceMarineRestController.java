@@ -57,6 +57,20 @@ public class SpaceMarineRestController {
         return ResponseEntity.ok().build();
     }
 
+    @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")
+    @DeleteMapping("/{id}/admin-editing/allow")
+    public ResponseEntity<Void> allowAdminEditing(@PathVariable Long id) {
+        spaceMarineService.allowAdminEditing(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")
+    @DeleteMapping("/{id}/admin-editing/deny")
+    public ResponseEntity<Void> denyAdminEditing(@PathVariable Long id) {
+        spaceMarineService.denyAdminEditing(id);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/grouped-by-creation-date")
     public ResponseEntity<Map<LocalDate, Integer>> getGroupedByCreationDate() {
         return ResponseEntity.ok(spaceMarineService.getSpaceMarineCountByCreationDate());
