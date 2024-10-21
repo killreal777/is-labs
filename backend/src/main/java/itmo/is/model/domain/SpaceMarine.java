@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import java.time.LocalDate;
 
@@ -33,6 +35,7 @@ public class SpaceMarine extends OwnedEntity {
     private LocalDate creationDate;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = true)
+    @OnDelete(action = OnDeleteAction.SET_NULL)
     @JoinColumn(name = "chapter_id", nullable = true)
     private Chapter chapter;
 

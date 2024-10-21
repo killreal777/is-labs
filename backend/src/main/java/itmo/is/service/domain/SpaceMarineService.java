@@ -20,7 +20,6 @@ import java.time.LocalDate;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -56,8 +55,11 @@ public class SpaceMarineService {
     }
 
     public void delete(Long id) {
-        if (!spaceMarineRepository.existsById(id)) {
-            throw new EntityNotFoundWithIdException(SpaceMarine.class, id);
+        SpaceMarine spaceMarine = spaceMarineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, id));
+
+        if (spaceMarine.getChapter() != null) {
+            decrementMarinesCount(spaceMarine.getChapter());
         }
         spaceMarineRepository.deleteById(id);
     }
@@ -88,11 +90,9 @@ public class SpaceMarineService {
         Chapter chapter = chapterRepository.findById(chapterId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException(Chapter.class, spaceMarineId));
 
+        incrementMarinesCount(chapter);
         spaceMarine.setChapter(chapter);
-        chapter.incrementMarinesCount();
-
         spaceMarineRepository.save(spaceMarine);
-        chapterRepository.save(chapter);
     }
 
     public void expel(Long spaceMarineId) {
@@ -104,11 +104,10 @@ public class SpaceMarineService {
         }
 
         Chapter chapter = spaceMarine.getChapter();
+        decrementMarinesCount(chapter);
         spaceMarine.setChapter(null);
-        chapter.decrementMarinesCount();
 
         spaceMarineRepository.save(spaceMarine);
-        chapterRepository.save(chapter);
     }
 
     public Map<LocalDate, Integer> countByCreationDate() {
@@ -129,5 +128,15 @@ public class SpaceMarineService {
 
     public Page<SpaceMarineDto> findAllDisloyal(Pageable pageable) {
         return spaceMarineRepository.findAllByLoyal(false, pageable).map(spaceMarineMapper::toDto);
+    }
+
+    private void incrementMarinesCount(Chapter chapter) {
+        chapter.incrementMarinesCount();
+        chapterRepository.save(chapter);
+    }
+
+    private void decrementMarinesCount(Chapter chapter) {
+        chapter.decrementMarinesCount();
+        chapterRepository.save(chapter);
     }
 }

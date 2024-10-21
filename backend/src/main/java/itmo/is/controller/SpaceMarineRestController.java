@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.util.Map;
 
-@Slf4j
 @RestController
 @RequestMapping("api/space-marines")
 @RequiredArgsConstructor
