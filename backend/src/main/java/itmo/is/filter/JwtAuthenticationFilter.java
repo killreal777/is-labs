@@ -9,11 +9,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.IOException;
 
@@ -29,35 +29,23 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain
     ) throws ServletException, IOException {
+        doFilterInternal(request);
+        filterChain.doFilter(request, response);
+    }
 
-        if (request.getServletPath().contains("/api/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
+    private void doFilterInternal(HttpServletRequest request) {
         final String jwt = getJwtFromRequest(request);
-
         if (jwt == null) {
-            filterChain.doFilter(request, response);
             return;
         }
 
         final String username = jwtService.extractUsername(jwt);
-
         if (username == null || SecurityContextHolder.getContext().getAuthentication() != null) {
-            filterChain.doFilter(request, response);
             return;
         }
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
-        if (!jwtService.isTokenValid(jwt, userDetails)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (!userDetails.isEnabled()) {
-            filterChain.doFilter(request, response);
+        if (!jwtService.isTokenValid(jwt, userDetails) || !userDetails.isEnabled()) {
             return;
         }
 
@@ -66,13 +54,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 null,
                 userDetails.getAuthorities()
         );
-
-        authToken.setDetails(
-                new WebAuthenticationDetailsSource().buildDetails(request)
-        );
+        authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authToken);
-
-        filterChain.doFilter(request, response);
     }
 
     private String getJwtFromRequest(HttpServletRequest request) {
