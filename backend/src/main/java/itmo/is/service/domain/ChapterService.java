@@ -47,8 +47,9 @@ public class ChapterService {
         return chapterMapper.toDto(saved);
     }
 
-    public ChapterDto update(UpdateChapterRequest request) {
+    public ChapterDto update(Long id, UpdateChapterRequest request) {
         var spaceMarine = chapterMapper.toEntity(request);
+        spaceMarine.setId(id);
         var saved = chapterRepository.save(spaceMarine);
         return chapterMapper.toDto(saved);
     }

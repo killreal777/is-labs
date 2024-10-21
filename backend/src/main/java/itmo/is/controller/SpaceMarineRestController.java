@@ -41,10 +41,13 @@ public class SpaceMarineRestController {
         return ResponseEntity.ok(spaceMarineService.save(request));
     }
 
-    @PreAuthorize("@spaceMarineSecurityService.hasEditRights(#request.id)")
-    @PutMapping
-    public ResponseEntity<SpaceMarineDto> update(@RequestBody UpdateSpaceMarineRequest request) {
-        return ResponseEntity.ok(spaceMarineService.update(request));
+    @PreAuthorize("@spaceMarineSecurityService.hasEditRights(#id)")
+    @PutMapping("/{id}")
+    public ResponseEntity<SpaceMarineDto> update(
+            @PathVariable Long id,
+            @RequestBody UpdateSpaceMarineRequest request
+    ) {
+        return ResponseEntity.ok(spaceMarineService.update(id, request));
     }
 
     @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")

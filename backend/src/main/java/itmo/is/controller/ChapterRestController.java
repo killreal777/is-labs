@@ -39,10 +39,13 @@ public class ChapterRestController {
         return ResponseEntity.ok(chapterService.save(request));
     }
 
-    @PreAuthorize("@chapterSecurityService.hasEditRights(#request.id)")
-    @PutMapping
-    public ResponseEntity<ChapterDto> update(@RequestBody UpdateChapterRequest request) {
-        return ResponseEntity.ok(chapterService.update(request));
+    @PreAuthorize("@chapterSecurityService.hasEditRights(#id)")
+    @PutMapping("/{id}")
+    public ResponseEntity<ChapterDto> update(
+            @PathVariable Long id,
+            @RequestBody UpdateChapterRequest request
+    ) {
+        return ResponseEntity.ok(chapterService.update(id, request));
     }
 
     @PreAuthorize("@chapterSecurityService.isOwner(#id)")

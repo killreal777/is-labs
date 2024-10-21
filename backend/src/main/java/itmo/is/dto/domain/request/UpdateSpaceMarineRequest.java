@@ -5,9 +5,6 @@ import itmo.is.dto.domain.CoordinatesDto;
 import itmo.is.model.domain.AstartesCategory;
 
 public record UpdateSpaceMarineRequest(
-        @JsonProperty("id")
-        Long id,
-
         @JsonProperty(value = "name", required = true)
         String name,
 

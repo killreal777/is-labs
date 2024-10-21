@@ -41,8 +41,9 @@ public class SpaceMarineService {
         return spaceMarineMapper.toDto(saved);
     }
 
-    public SpaceMarineDto update(UpdateSpaceMarineRequest request) {
+    public SpaceMarineDto update(Long id, UpdateSpaceMarineRequest request) {
         var spaceMarine = spaceMarineMapper.toEntity(request);
+        spaceMarine.setId(id);
         var saved = spaceMarineRepository.save(spaceMarine);
         return spaceMarineMapper.toDto(saved);
     }
