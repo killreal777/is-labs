@@ -3,6 +3,7 @@ package itmo.is.service.domain;
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
+import itmo.is.exception.EntityNotFoundWithIdException;
 import itmo.is.mapper.domain.SpaceMarineMapper;
 import itmo.is.model.domain.Chapter;
 import itmo.is.model.domain.SpaceMarine;
@@ -28,7 +29,7 @@ public class SpaceMarineService {
     private final SpaceMarineMapper spaceMarineMapper;
     private final ChapterRepository chapterRepository;
 
-    public Page<SpaceMarineDto> findAll(String name, Pageable pageable) {
+    public Page<SpaceMarineDto> findAllWithFilters(String name, Pageable pageable) {
         if (name != null) {
             return spaceMarineRepository.findAllByName(name, pageable).map(spaceMarineMapper::toDto);
         }
@@ -36,10 +37,12 @@ public class SpaceMarineService {
     }
 
     public SpaceMarineDto findById(Long id) {
-        return spaceMarineMapper.toDto(spaceMarineRepository.findById(id).orElseThrow());
+        return spaceMarineRepository.findById(id)
+                .map(spaceMarineMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, id));
     }
 
-    public SpaceMarineDto save(CreateSpaceMarineRequest request) {
+    public SpaceMarineDto create(CreateSpaceMarineRequest request) {
         var spaceMarine = spaceMarineMapper.toEntity(request);
         var saved = spaceMarineRepository.save(spaceMarine);
         return spaceMarineMapper.toDto(saved);
@@ -52,47 +55,63 @@ public class SpaceMarineService {
         return spaceMarineMapper.toDto(saved);
     }
 
-    public void deleteById(Long id) {
+    public void delete(Long id) {
+        if (!spaceMarineRepository.existsById(id)) {
+            throw new EntityNotFoundWithIdException(SpaceMarine.class, id);
+        }
         spaceMarineRepository.deleteById(id);
     }
 
     public void allowAdminEditing(Long id) {
-        var spaceMarine = spaceMarineRepository.findById(id).orElseThrow();
-        spaceMarine.setAdminEditAllowed(true);
-        spaceMarineRepository.save(spaceMarine);
+        setAdminEditAllowed(id, true);
     }
 
     public void denyAdminEditing(Long id) {
-        var spaceMarine = spaceMarineRepository.findById(id).orElseThrow();
-        spaceMarine.setAdminEditAllowed(false);
-        spaceMarineRepository.save(spaceMarine);
+        setAdminEditAllowed(id, false);
+    }
+
+    private void setAdminEditAllowed(Long id, boolean adminEditAllowed) {
+        var chapter = spaceMarineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, id));
+        chapter.setAdminEditAllowed(adminEditAllowed);
+        spaceMarineRepository.save(chapter);
     }
 
     public void enroll(Long spaceMarineId, Long chapterId) {
-        SpaceMarine spaceMarine = spaceMarineRepository.findById(spaceMarineId).orElseThrow();
+        SpaceMarine spaceMarine = spaceMarineRepository.findById(spaceMarineId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, spaceMarineId));
+
         if (spaceMarine.getChapter() != null) {
-            throw new IllegalStateException("Space Marine already has a chapter");
+            throw new IllegalStateException("Space Marine already assigned to a chapter.");
         }
-        Chapter chapter = chapterRepository.findById(chapterId).orElseThrow();
+
+        Chapter chapter = chapterRepository.findById(chapterId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException(Chapter.class, spaceMarineId));
+
         spaceMarine.setChapter(chapter);
         chapter.incrementMarinesCount();
+
         spaceMarineRepository.save(spaceMarine);
         chapterRepository.save(chapter);
     }
 
     public void expel(Long spaceMarineId) {
-        SpaceMarine spaceMarine = spaceMarineRepository.findById(spaceMarineId).orElseThrow();
+        SpaceMarine spaceMarine = spaceMarineRepository.findById(spaceMarineId)
+                .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, spaceMarineId));
+
         if (spaceMarine.getChapter() == null) {
-            throw new IllegalStateException("Space Marine does not have a chapter");
+            throw new IllegalStateException("Space Marine is not assigned to any chapter.");
         }
+
         Chapter chapter = spaceMarine.getChapter();
         spaceMarine.setChapter(null);
         chapter.decrementMarinesCount();
+
         spaceMarineRepository.save(spaceMarine);
         chapterRepository.save(chapter);
     }
 
-    public Map<LocalDate, Integer> getSpaceMarineCountByCreationDate() {
+    public Map<LocalDate, Integer> countByCreationDate() {
         return spaceMarineRepository.countByCreationDateGrouped().stream()
                 .collect(Collectors.toMap(
                         result -> (LocalDate) result[0],

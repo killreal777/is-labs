@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,16 +25,16 @@ public class AuthenticationRestController {
 
     @PostMapping("/auth/register")
     public ResponseEntity<JwtResponse> register(@RequestBody RegisterRequest request) {
-        return ResponseEntity.ok(authenticationService.registerUser(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.registerUser(request));
     }
 
     @PostMapping("/auth/register-admin")
     public ResponseEntity<JwtResponse> registerAdmin(@RequestBody RegisterRequest request) {
         if (authenticationService.hasRegisteredAdmins()) {
             authenticationService.submitAdminRegistrationRequest(request);
-            return ResponseEntity.ok().build();
+            return ResponseEntity.accepted().build();
         } else {
-            return ResponseEntity.ok(authenticationService.registerFirstAdmin(request));
+            return ResponseEntity.status(HttpStatus.CREATED).body(authenticationService.registerFirstAdmin(request));
         }
     }
 

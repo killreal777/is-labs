@@ -1,6 +1,7 @@
 package itmo.is.model.security;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -18,19 +19,23 @@ import java.util.Set;
 @AllArgsConstructor
 public class User implements UserDetails {
     @Id
-    @GeneratedValue//(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true)
+    @NotNull
+    @Column(name = "username", unique = true, nullable = false)
     private String username;
 
-    @Column
+    @NotNull
+    @Column(name = "password", nullable = false)
     private String password;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
     private Role role;
 
-    @Column
+    @Column(name = "enabled", nullable = false)
     private boolean enabled;
 
     @Override

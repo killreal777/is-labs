@@ -3,7 +3,9 @@ package itmo.is.service.domain;
 import itmo.is.dto.domain.ChapterDto;
 import itmo.is.dto.domain.request.CreateChapterRequest;
 import itmo.is.dto.domain.request.UpdateChapterRequest;
+import itmo.is.exception.EntityNotFoundWithIdException;
 import itmo.is.mapper.domain.ChapterMapper;
+import itmo.is.model.domain.Chapter;
 import itmo.is.repository.ChapterRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +20,7 @@ public class ChapterService {
     private final ChapterRepository chapterRepository;
     private final ChapterMapper chapterMapper;
 
-    public Page<ChapterDto> findAll(String name, String parentLegion, Pageable pageable) {
+    public Page<ChapterDto> findAllWithFilters(String name, String parentLegion, Pageable pageable) {
         if (name != null && parentLegion != null) {
             return chapterRepository.findAllByNameAndParentLegion(name, parentLegion, pageable).map(chapterMapper::toDto);
         }
@@ -32,10 +34,12 @@ public class ChapterService {
     }
 
     public ChapterDto findById(Long id) {
-        return chapterMapper.toDto(chapterRepository.findById(id).orElseThrow());
+        return chapterRepository.findById(id)
+                .map(chapterMapper::toDto)
+                .orElseThrow(() -> new EntityNotFoundWithIdException(Chapter.class, id));
     }
 
-    public ChapterDto save(CreateChapterRequest request) {
+    public ChapterDto create(CreateChapterRequest request) {
         var spaceMarine = chapterMapper.toEntity(request);
         var saved = chapterRepository.save(spaceMarine);
         return chapterMapper.toDto(saved);
@@ -48,19 +52,25 @@ public class ChapterService {
         return chapterMapper.toDto(saved);
     }
 
-    public void deleteById(Long id) {
+    public void delete(Long id) {
+        if (!chapterRepository.existsById(id)) {
+            throw new EntityNotFoundWithIdException(Chapter.class, id);
+        }
         chapterRepository.deleteById(id);
     }
 
     public void allowAdminEditing(Long id) {
-        var chapter = chapterRepository.findById(id).orElseThrow();
-        chapter.setAdminEditAllowed(true);
-        chapterRepository.save(chapter);
+        setAdminEditAllowed(id, true);
     }
 
     public void denyAdminEditing(Long id) {
-        var chapter = chapterRepository.findById(id).orElseThrow();
-        chapter.setAdminEditAllowed(false);
+        setAdminEditAllowed(id, false);
+    }
+
+    private void setAdminEditAllowed(Long id, boolean adminEditAllowed) {
+        var chapter = chapterRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundWithIdException(Chapter.class, id));
+        chapter.setAdminEditAllowed(adminEditAllowed);
         chapterRepository.save(chapter);
     }
 

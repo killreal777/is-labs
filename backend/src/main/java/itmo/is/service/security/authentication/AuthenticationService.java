@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -33,12 +34,8 @@ public class AuthenticationService {
                         request.password()
                 )
         );
-        User user = userRepository.findByUsername(request.username()).orElseThrow();
-
-        if (!user.isEnabled()) {
-            throw new AuthenticationServiceException("User is disabled");
-        }
-
+        var user = findUserByUsername(request.username());
+        validateUserEnabled(user);
         return generateJwt(user);
     }
 
@@ -51,36 +48,40 @@ public class AuthenticationService {
     }
 
     public JwtResponse registerFirstAdmin(RegisterRequest request) {
-        if (hasRegisteredAdmins()) {
-            throw new AuthenticationServiceException("First admin is already registered");
-        }
+        validateFirstAdminNotRegistered();
         return registerEnabled(request, Role.ROLE_ADMIN);
     }
 
     public void submitAdminRegistrationRequest(RegisterRequest registerRequest) {
-        if (!hasRegisteredAdmins()) {
-            throw new AuthenticationServiceException("First admin is not registered yet");
-        }
+        validateFirstAdminRegistered();
         boolean enabled = false;
         createUser(registerRequest, Role.ROLE_ADMIN, enabled);
     }
 
     public void approveAdminRegistrationRequest(Long userId) {
-        var user = userRepository.findById(userId).orElseThrow();
+        var user = findUserById(userId);
         user.setEnabled(true);
         userRepository.save(user);
     }
 
     public void rejectAdminRegistrationRequest(Long userId) {
-        var user = userRepository.findById(userId).orElseThrow();
-        if (user.isEnabled()) {
-            throw new AuthenticationServiceException("User is enabled");
-        }
+        var user = findUserById(userId);
+        validateUserNotEnabled(user);
         userRepository.delete(user);
     }
 
     public Page<UserDto> getPendingRegistrationRequests(Pageable pageable) {
         return userRepository.findAllByEnabledFalse(pageable).map(userMapper::toDto);
+    }
+
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new AuthenticationServiceException("User not found with id: " + userId));
+    }
+
+    private User findUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
     }
 
     private JwtResponse registerEnabled(RegisterRequest request, Role role) {
@@ -102,14 +103,39 @@ public class AuthenticationService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
+    private JwtResponse generateJwt(User user) {
+        String jwt = jwtService.generateToken(user);
+        return new JwtResponse(jwt);
+    }
+
+
+    private void validateUserEnabled(User user) {
+        if (!user.isEnabled()) {
+            throw new AuthenticationServiceException("User is disabled: " + user.getUsername());
+        }
+    }
+
+    private void validateUserNotEnabled(User user) {
+        if (user.isEnabled()) {
+            throw new AuthenticationServiceException("Cannot delete an enabled user");
+        }
+    }
+
+    private void validateFirstAdminNotRegistered() {
+        if (hasRegisteredAdmins()) {
+            throw new AuthenticationServiceException("First admin is already registered");
+        }
+    }
+
+    private void validateFirstAdminRegistered() {
+        if (!hasRegisteredAdmins()) {
+            throw new AuthenticationServiceException("First admin is not registered yet");
+        }
+    }
+
     private void checkIfUsernameIsTaken(String username) {
         if (userRepository.existsByUsername(username)) {
             throw new AuthenticationServiceException("Username " + username + " is taken");
         }
-    }
-
-    private JwtResponse generateJwt(User user) {
-        String jwt = jwtService.generateToken(user);
-        return new JwtResponse(jwt);
     }
 }

@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -26,9 +27,9 @@ public class SpaceMarineRestController {
     @GetMapping
     public ResponseEntity<Page<SpaceMarineDto>> findAll(
             @RequestParam(required = false) String name,
-            @PageableDefault(size = 10, page = 0) Pageable pageable
+            @PageableDefault Pageable pageable
     ) {
-        return ResponseEntity.ok(spaceMarineService.findAll(name, pageable));
+        return ResponseEntity.ok(spaceMarineService.findAllWithFilters(name, pageable));
     }
 
     @GetMapping("/{id}")
@@ -37,23 +38,20 @@ public class SpaceMarineRestController {
     }
 
     @PostMapping
-    public ResponseEntity<SpaceMarineDto> save(@RequestBody CreateSpaceMarineRequest request) {
-        return ResponseEntity.ok(spaceMarineService.save(request));
+    public ResponseEntity<SpaceMarineDto> create(@RequestBody CreateSpaceMarineRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(spaceMarineService.create(request));
     }
 
     @PreAuthorize("@spaceMarineSecurityService.hasEditRights(#id)")
     @PutMapping("/{id}")
-    public ResponseEntity<SpaceMarineDto> update(
-            @PathVariable Long id,
-            @RequestBody UpdateSpaceMarineRequest request
-    ) {
+    public ResponseEntity<SpaceMarineDto> update(@PathVariable Long id, @RequestBody UpdateSpaceMarineRequest request) {
         return ResponseEntity.ok(spaceMarineService.update(id, request));
     }
 
     @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteById(@PathVariable Long id) {
-        spaceMarineService.deleteById(id);
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        spaceMarineService.delete(id);
         return ResponseEntity.ok().build();
     }
 
@@ -86,29 +84,25 @@ public class SpaceMarineRestController {
     }
 
     @GetMapping("/grouped-by-creation-date")
-    public ResponseEntity<Map<LocalDate, Integer>> getGroupedByCreationDate() {
-        return ResponseEntity.ok(spaceMarineService.getSpaceMarineCountByCreationDate());
+    public ResponseEntity<Map<LocalDate, Integer>> countGroupedByCreationDate() {
+        return ResponseEntity.ok(spaceMarineService.countByCreationDate());
     }
 
     @GetMapping("/name-containing")
     public ResponseEntity<Page<SpaceMarineDto>> findAllByNameContaining(
             @RequestParam String substring,
-            @PageableDefault(size = 10, page = 0) Pageable pageable
+            @PageableDefault Pageable pageable
     ) {
         return ResponseEntity.ok(spaceMarineService.findAllByNameContaining(substring, pageable));
     }
 
     @GetMapping("/loyal")
-    public ResponseEntity<Page<SpaceMarineDto>> findAllLoyal(
-            @PageableDefault(size = 10, page = 0) Pageable pageable
-    ) {
+    public ResponseEntity<Page<SpaceMarineDto>> findAllLoyal(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok(spaceMarineService.findAllLoyal(pageable));
     }
 
     @GetMapping("/disloyal")
-    public ResponseEntity<Page<SpaceMarineDto>> findAllDisloyal(
-            @PageableDefault(size = 10, page = 0) Pageable pageable
-    ) {
+    public ResponseEntity<Page<SpaceMarineDto>> findAllDisloyal(@PageableDefault Pageable pageable) {
         return ResponseEntity.ok(spaceMarineService.findAllDisloyal(pageable));
     }
 }
