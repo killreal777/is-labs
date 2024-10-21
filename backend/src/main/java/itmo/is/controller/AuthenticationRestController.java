@@ -11,8 +11,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api")
 @RequiredArgsConstructor
@@ -29,7 +27,7 @@ public class AuthenticationRestController {
         return ResponseEntity.ok(authenticationService.registerUser(request));
     }
 
-    @PostMapping("/auth/register/admin")
+    @PostMapping("/auth/register-admin")
     public ResponseEntity<JwtResponse> registerAdmin(@RequestBody RegisterRequest request) {
         if (authenticationService.hasRegisteredAdmins()) {
             authenticationService.submitAdminRegistrationRequest(request);
