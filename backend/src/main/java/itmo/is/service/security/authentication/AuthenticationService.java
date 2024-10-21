@@ -9,6 +9,7 @@ import itmo.is.model.security.Role;
 import itmo.is.model.security.User;
 import itmo.is.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -26,6 +27,9 @@ public class AuthenticationService {
     private final PasswordEncoder passwordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
+
+    @Value("${application.security.unique-password-constraint}")
+    private boolean uniquePasswordConstraint;
 
     public JwtResponse authenticate(LoginRequest request) {
         authenticationManager.authenticate(
@@ -81,16 +85,12 @@ public class AuthenticationService {
     }
 
     private User createUser(RegisterRequest request, Role role, boolean enabled) {
-        checkIfUsernameIsTaken(request.username());
+        validateRegisterRequest(request);
         User user = userMapper.toEntity(request);
-        encodePassword(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(role);
         user.setEnabled(enabled);
         return userRepository.save(user);
-    }
-
-    private void encodePassword(User user) {
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
     }
 
     private JwtResponse generateJwt(User user) {
@@ -132,9 +132,24 @@ public class AuthenticationService {
         }
     }
 
-    private void checkIfUsernameIsTaken(String username) {
+    private void validateRegisterRequest(RegisterRequest request) {
+        validateUsername(request.username());
+        validatePassword(request.password());
+    }
+
+    private void validateUsername(String username) {
         if (userRepository.existsByUsername(username)) {
             throw new AuthenticationServiceException("Username " + username + " is taken");
+        }
+    }
+
+    private void validatePassword(String password) { // ТЗ XD
+        if (uniquePasswordConstraint) {
+            String encodedPassword = passwordEncoder.encode(password);
+            userRepository.findByPassword(encodedPassword).ifPresent((user) -> {
+                String message = "Password " + password + " is already taken by user " + user.getUsername();
+                throw new AuthenticationServiceException(message);
+            });
         }
     }
 }
