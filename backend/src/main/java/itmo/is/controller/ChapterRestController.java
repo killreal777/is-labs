@@ -56,14 +56,14 @@ public class ChapterRestController {
     }
 
     @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")
-    @DeleteMapping("/{id}/admin-editing/allow")
+    @PutMapping("/{id}/admin-editing/allow")
     public ResponseEntity<Void> allowAdminEditing(@PathVariable Long id) {
         chapterService.allowAdminEditing(id);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")
-    @DeleteMapping("/{id}/admin-editing/deny")
+    @PutMapping("/{id}/admin-editing/deny")
     public ResponseEntity<Void> denyAdminEditing(@PathVariable Long id) {
         chapterService.denyAdminEditing(id);
         return ResponseEntity.ok().build();

@@ -58,14 +58,14 @@ public class SpaceMarineRestController {
     }
 
     @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")
-    @DeleteMapping("/{id}/admin-editing/allow")
+    @PutMapping("/{id}/admin-editing/allow")
     public ResponseEntity<Void> allowAdminEditing(@PathVariable Long id) {
         spaceMarineService.allowAdminEditing(id);
         return ResponseEntity.ok().build();
     }
 
     @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")
-    @DeleteMapping("/{id}/admin-editing/deny")
+    @PutMapping("/{id}/admin-editing/deny")
     public ResponseEntity<Void> denyAdminEditing(@PathVariable Long id) {
         spaceMarineService.denyAdminEditing(id);
         return ResponseEntity.ok().build();
