@@ -3,7 +3,7 @@ package itmo.is.service.domain;
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
-import itmo.is.mapper.SpaceMarineMapper;
+import itmo.is.mapper.domain.SpaceMarineMapper;
 import itmo.is.repository.SpaceMarineRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;

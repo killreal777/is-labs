@@ -1,8 +1,9 @@
-package itmo.is.mapper;
+package itmo.is.mapper.domain;
 
 import itmo.is.dto.domain.ChapterDto;
 import itmo.is.dto.domain.request.CreateChapterRequest;
 import itmo.is.dto.domain.request.UpdateChapterRequest;
+import itmo.is.mapper.EntityMapper;
 import itmo.is.model.domain.Chapter;
 import org.mapstruct.Mapper;
 

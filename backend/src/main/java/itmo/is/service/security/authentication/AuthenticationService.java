@@ -4,7 +4,7 @@ import itmo.is.dto.authentication.LoginRequest;
 import itmo.is.dto.authentication.JwtResponse;
 import itmo.is.dto.authentication.RegisterRequest;
 import itmo.is.dto.authentication.UserDto;
-import itmo.is.mapper.UserMapper;
+import itmo.is.mapper.security.UserMapper;
 import itmo.is.model.security.Role;
 import itmo.is.model.security.User;
 import itmo.is.repository.UserRepository;
@@ -16,8 +16,6 @@ import org.springframework.security.authentication.AuthenticationServiceExceptio
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor

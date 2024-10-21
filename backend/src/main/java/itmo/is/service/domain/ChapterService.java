@@ -5,7 +5,7 @@ import itmo.is.dto.domain.request.CreateChapterRequest;
 import itmo.is.dto.domain.request.EnrollRequest;
 import itmo.is.dto.domain.request.ExpelRequest;
 import itmo.is.dto.domain.request.UpdateChapterRequest;
-import itmo.is.mapper.ChapterMapper;
+import itmo.is.mapper.domain.ChapterMapper;
 import itmo.is.model.domain.Chapter;
 import itmo.is.model.domain.SpaceMarine;
 import itmo.is.repository.ChapterRepository;
