@@ -7,10 +7,7 @@ import itmo.is.model.domain.SpaceMarine;
 import org.mapstruct.Mapper;
 
 
-@Mapper(
-        componentModel = "spring",
-        uses = {CoordinatesMapper.class, ChapterMapper.class, AstartesCategoryMapper.class}
-)
+@Mapper(componentModel = "spring", uses = {CoordinatesMapper.class, ChapterMapper.class})
 public interface SpaceMarineMapper extends EntityMapper<SpaceMarineDto, SpaceMarine> {
     SpaceMarine toEntity(CreateSpaceMarineRequest request);
 

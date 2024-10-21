@@ -3,10 +3,13 @@ package itmo.is.dto.domain.request;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record CreateChapterRequest(
-        @JsonProperty("name")
+        @JsonProperty(value = "name", required = true)
         String name,
 
-        @JsonProperty("parent_legion")
-        String parentLegion
+        @JsonProperty(value = "parent_legion", required = false)
+        String parentLegion,
+
+        @JsonProperty(value = "admin_edit_allowed", required = true)
+        boolean adminEditAllowed
 ) {
 }

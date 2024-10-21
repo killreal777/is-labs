@@ -3,10 +3,10 @@ package itmo.is.dto.authentication;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 public record LoginRequest(
-        @JsonProperty("username")
+        @JsonProperty(value = "username", required = true)
         String username,
 
-        @JsonProperty("password")
+        @JsonProperty(value = "password", required = true)
         String password
 ) {
 }

@@ -6,13 +6,13 @@ public record UpdateChapterRequest(
         @JsonProperty("id")
         Long id,
 
-        @JsonProperty("name")
+        @JsonProperty(value = "name", required = true)
         String name,
 
-        @JsonProperty("parent_legion")
+        @JsonProperty(value = "parent_legion", required = false)
         String parentLegion,
 
-        @JsonProperty("admin_edit_allowed")
+        @JsonProperty(value = "admin_edit_allowed", required = true)
         boolean adminEditAllowed
 ) {
 }
