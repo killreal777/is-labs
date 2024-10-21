@@ -74,16 +74,6 @@ public class AuthenticationService {
         return userRepository.findAllByEnabledFalse(pageable).map(userMapper::toDto);
     }
 
-    private User findUserById(Long userId) {
-        return userRepository.findById(userId)
-                .orElseThrow(() -> new AuthenticationServiceException("User not found with id: " + userId));
-    }
-
-    private User findUserByUsername(String username) {
-        return userRepository.findByUsername(username)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
-    }
-
     private JwtResponse registerEnabled(RegisterRequest request, Role role) {
         boolean enabled = true;
         var user = createUser(request, role, enabled);
@@ -108,6 +98,15 @@ public class AuthenticationService {
         return new JwtResponse(jwt);
     }
 
+    private User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new AuthenticationServiceException("User not found with id: " + userId));
+    }
+
+    private User findUserByUsername(String username) {
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new UsernameNotFoundException("User not found: " + username));
+    }
 
     private void validateUserEnabled(User user) {
         if (!user.isEnabled()) {
