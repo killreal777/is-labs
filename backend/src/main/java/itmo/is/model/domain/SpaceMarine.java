@@ -53,6 +53,6 @@ public class SpaceMarine extends OwnedEntity {
 
     @NotNull
     @Enumerated(EnumType.STRING)
-    @Column(name = "astartes_category", nullable = false)
+    @Column(name = "category", nullable = false)
     private AstartesCategory category;
 }
