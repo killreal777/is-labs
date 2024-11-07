@@ -26,6 +26,7 @@ public class SecurityFilterChainConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(request ->
                         request.requestMatchers(WHITE_LIST_URL).permitAll()
                                 .requestMatchers(ADMIN_LIST_URL).hasRole("ADMIN")
