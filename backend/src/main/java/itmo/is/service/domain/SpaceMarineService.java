@@ -48,9 +48,13 @@ public class SpaceMarineService {
     }
 
     public SpaceMarineDto update(Long id, UpdateSpaceMarineRequest request) {
-        var spaceMarine = spaceMarineMapper.toEntity(request);
-        spaceMarine.setId(id);
-        var saved = spaceMarineRepository.save(spaceMarine);
+        var original = spaceMarineRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, id));
+        var updated = spaceMarineMapper.toEntity(request);
+        updated.setId(id);
+        updated.setOwner(original.getOwner());
+        updated.setAdminEditAllowed(original.isAdminEditAllowed());
+        var saved = spaceMarineRepository.save(updated);
         return spaceMarineMapper.toDto(saved);
     }
 

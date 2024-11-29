@@ -46,9 +46,13 @@ public class ChapterService {
     }
 
     public ChapterDto update(Long id, UpdateChapterRequest request) {
-        var spaceMarine = chapterMapper.toEntity(request);
-        spaceMarine.setId(id);
-        var saved = chapterRepository.save(spaceMarine);
+        var original = chapterRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundWithIdException(Chapter.class, id));
+        var updated = chapterMapper.toEntity(request);
+        updated.setId(id);
+        updated.setOwner(original.getOwner());
+        updated.setAdminEditAllowed(original.isAdminEditAllowed());
+        var saved = chapterRepository.save(updated);
         return chapterMapper.toDto(saved);
     }
 
