@@ -1,5 +1,8 @@
 package itmo.is.service.domain;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
@@ -11,12 +14,14 @@ import itmo.is.repository.ChapterRepository;
 import itmo.is.repository.SpaceMarineRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -45,6 +50,30 @@ public class SpaceMarineService {
         var spaceMarine = spaceMarineMapper.toEntity(request);
         var saved = spaceMarineRepository.save(spaceMarine);
         return spaceMarineMapper.toDto(saved);
+    }
+
+    @Transactional
+    public void createBulk(MultipartFile file) {
+        createBulk(parseFile(file));
+    }
+
+    @Transactional
+    public void createBulk(List<CreateSpaceMarineRequest> requests) {
+        List<SpaceMarine> spaceMarines = requests.stream()
+                .map(spaceMarineMapper::toEntity)
+                .toList();
+        spaceMarineRepository.saveAll(spaceMarines);
+    }
+
+    private List<CreateSpaceMarineRequest> parseFile(MultipartFile file) {
+        try {
+            return new ObjectMapper().readValue(file.getBytes(), new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Invalid JSON file format", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading JSON file", e);
+        }
     }
 
     public SpaceMarineDto update(Long id, UpdateSpaceMarineRequest request) {

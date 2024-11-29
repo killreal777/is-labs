@@ -20,6 +20,11 @@ spring:
     username: ${SPRING_DATASOURCE_USERNAME:s333291}
     password: ${SPRING_DATASOURCE_PASSWORD:qwerty12345}
 
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
 application:
   security:
     jwt:
