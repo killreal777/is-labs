@@ -16,7 +16,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityFilterChainConfig {
-    private static final String[] WHITE_LIST_URL = {"/api/auth/**"};
+    private static final String[] WHITE_LIST_URL = {
+            "/api/auth/**", "/swagger-ui*/**", "/swagger-ui.html", "/v3/api-docs/**", "/v3/api-docs.yaml"
+    };
     private static final String[] ADMIN_LIST_URL = {"/api/admin/**"};
 
     private final AuthenticationProvider authenticationProvider;
