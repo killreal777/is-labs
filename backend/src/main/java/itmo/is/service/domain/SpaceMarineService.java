@@ -21,8 +21,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,9 +61,19 @@ public class SpaceMarineService {
 
     @Transactional
     public void createBulk(List<CreateSpaceMarineRequest> requests) {
+        Set<String> names = new HashSet<>();
         List<SpaceMarine> spaceMarines = requests.stream()
+                .filter(request -> {
+                    if (!names.add(request.name())) {
+                        throw new IllegalArgumentException("Duplicate name found among requests: " + request.name());
+                    }
+                    return true;
+                })
                 .map(spaceMarineMapper::toEntity)
                 .toList();
+        spaceMarineRepository.findFirstByNameIn(names).ifPresent(spaceMarine -> {
+            throw new IllegalArgumentException("Duplicate name found in database: " + spaceMarine.getName());
+        });
         spaceMarineRepository.saveAll(spaceMarines);
     }
 
