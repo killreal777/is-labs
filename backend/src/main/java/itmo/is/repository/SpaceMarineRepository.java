@@ -23,5 +23,7 @@ public interface SpaceMarineRepository extends JpaRepository<SpaceMarine, Long> 
 
     Page<SpaceMarine> findAllByLoyal(@NonNull boolean loyal, @NonNull Pageable pageable);
 
+    boolean existsByName(@NonNull String name);
+
     Optional<SpaceMarine> findFirstByNameIn(@NonNull Set<String> names);
 }

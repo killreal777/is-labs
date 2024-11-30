@@ -13,6 +13,7 @@ import itmo.is.model.domain.SpaceMarine;
 import itmo.is.repository.ChapterRepository;
 import itmo.is.repository.SpaceMarineRepository;
 import jakarta.transaction.Transactional;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -48,7 +49,14 @@ public class SpaceMarineService {
                 .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, id));
     }
 
+    @Transactional
     public SpaceMarineDto create(CreateSpaceMarineRequest request) {
+        String name = request.name();
+        if (spaceMarineRepository.existsByName(name)) {
+            throw new ValidationException(
+                    "Unique constraint violation: name '" + name + "' already exists in the database"
+            );
+        }
         var spaceMarine = spaceMarineMapper.toEntity(request);
         var saved = spaceMarineRepository.save(spaceMarine);
         return spaceMarineMapper.toDto(saved);
@@ -65,14 +73,18 @@ public class SpaceMarineService {
         List<SpaceMarine> spaceMarines = requests.stream()
                 .filter(request -> {
                     if (!names.add(request.name())) {
-                        throw new IllegalArgumentException("Duplicate name found among requests: " + request.name());
+                        throw new ValidationException(
+                                "Unique constraint violation: duplicate name in requests '" + request.name() + "'"
+                        );
                     }
                     return true;
                 })
                 .map(spaceMarineMapper::toEntity)
                 .toList();
         spaceMarineRepository.findFirstByNameIn(names).ifPresent(spaceMarine -> {
-            throw new IllegalArgumentException("Duplicate name found in database: " + spaceMarine.getName());
+            throw new ValidationException(
+                    "Unique constraint violation: name '" + spaceMarine.getName() + "' already exists in the database"
+            );
         });
         spaceMarineRepository.saveAll(spaceMarines);
     }
