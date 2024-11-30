@@ -1,7 +1,7 @@
 package itmo.is.service.security.authorization;
 
 import itmo.is.model.domain.SpaceMarine;
-import itmo.is.repository.SpaceMarineRepository;
+import itmo.is.repository.domain.SpaceMarineRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

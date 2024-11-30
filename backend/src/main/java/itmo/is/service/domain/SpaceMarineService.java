@@ -7,11 +7,14 @@ import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
 import itmo.is.exception.EntityNotFoundWithIdException;
+import itmo.is.exception.UniqueConstraintViolationException;
 import itmo.is.mapper.domain.SpaceMarineMapper;
 import itmo.is.model.domain.Chapter;
 import itmo.is.model.domain.SpaceMarine;
-import itmo.is.repository.ChapterRepository;
-import itmo.is.repository.SpaceMarineRepository;
+import itmo.is.model.history.SpaceMarineImportLog;
+import itmo.is.repository.domain.ChapterRepository;
+import itmo.is.repository.domain.SpaceMarineRepository;
+import itmo.is.service.history.SpaceMarineImportHistoryService;
 import jakarta.transaction.Transactional;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +38,7 @@ public class SpaceMarineService {
     private final SpaceMarineRepository spaceMarineRepository;
     private final SpaceMarineMapper spaceMarineMapper;
     private final ChapterRepository chapterRepository;
+    private final SpaceMarineImportHistoryService spaceMarineImportHistoryService;
 
     public Page<SpaceMarineDto> findAllWithFilters(String name, Pageable pageable) {
         if (name != null) {
@@ -51,42 +55,15 @@ public class SpaceMarineService {
 
     @Transactional
     public SpaceMarineDto create(CreateSpaceMarineRequest request) {
-        String name = request.name();
-        if (spaceMarineRepository.existsByName(name)) {
-            throw new ValidationException(
-                    "Unique constraint violation: name '" + name + "' already exists in the database"
-            );
-        }
         var spaceMarine = spaceMarineMapper.toEntity(request);
+        validateUniqueSpaceMarineNameConstraint(spaceMarine);
         var saved = spaceMarineRepository.save(spaceMarine);
         return spaceMarineMapper.toDto(saved);
     }
 
     @Transactional
-    public void createBulk(MultipartFile file) {
-        createBulk(parseFile(file));
-    }
-
-    @Transactional
-    public void createBulk(List<CreateSpaceMarineRequest> requests) {
-        Set<String> names = new HashSet<>();
-        List<SpaceMarine> spaceMarines = requests.stream()
-                .filter(request -> {
-                    if (!names.add(request.name())) {
-                        throw new ValidationException(
-                                "Unique constraint violation: duplicate name in requests '" + request.name() + "'"
-                        );
-                    }
-                    return true;
-                })
-                .map(spaceMarineMapper::toEntity)
-                .toList();
-        spaceMarineRepository.findFirstByNameIn(names).ifPresent(spaceMarine -> {
-            throw new ValidationException(
-                    "Unique constraint violation: name '" + spaceMarine.getName() + "' already exists in the database"
-            );
-        });
-        spaceMarineRepository.saveAll(spaceMarines);
+    public void importFile(MultipartFile file) {
+        importSpaceMarinesLogProxy(parseFile(file));
     }
 
     private List<CreateSpaceMarineRequest> parseFile(MultipartFile file) {
@@ -100,10 +77,28 @@ public class SpaceMarineService {
         }
     }
 
+    private void importSpaceMarinesLogProxy(List<CreateSpaceMarineRequest> requests) {
+        SpaceMarineImportLog importLog = spaceMarineImportHistoryService.createStartedImportLog();
+        importSpaceMarines(requests);
+        importLog.setSuccess(true);
+        importLog.setObjectsAdded(requests.size());
+        spaceMarineImportHistoryService.saveFinishedImportLog(importLog);
+    }
+
+    private void importSpaceMarines(List<CreateSpaceMarineRequest> requests) {
+        List<SpaceMarine> spaceMarines = requests.stream().map(spaceMarineMapper::toEntity).toList();
+        validateUniqueSpaceMarineNameConstraint(spaceMarines);
+        spaceMarineRepository.saveAll(spaceMarines);
+    }
+
+    @Transactional
     public SpaceMarineDto update(Long id, UpdateSpaceMarineRequest request) {
         var original = spaceMarineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, id));
         var updated = spaceMarineMapper.toEntity(request);
+        if (!original.getName().equals(updated.getName())) {
+            validateUniqueSpaceMarineNameConstraint(updated);
+        }
         updated.setId(id);
         updated.setOwner(original.getOwner());
         updated.setAdminEditAllowed(original.isAdminEditAllowed());
@@ -111,6 +106,25 @@ public class SpaceMarineService {
         return spaceMarineMapper.toDto(saved);
     }
 
+    private void validateUniqueSpaceMarineNameConstraint(SpaceMarine spaceMarine) {
+        if (spaceMarineRepository.existsByName(spaceMarine.getName())) {
+            throw new UniqueConstraintViolationException(SpaceMarine.class, "name", spaceMarine.getName());
+        }
+    }
+
+    private void validateUniqueSpaceMarineNameConstraint(List<SpaceMarine> spaceMarines) {
+        Set<String> names = new HashSet<>();
+        spaceMarines.forEach(chapter -> {
+            if (!names.add(chapter.getName())) {
+                throw new UniqueConstraintViolationException(SpaceMarine.class, "name", chapter.getName());
+            }
+        });
+        spaceMarineRepository.findFirstByNameIn(names).ifPresent((spaceMarine) -> {
+            throw new UniqueConstraintViolationException(SpaceMarine.class, "name", spaceMarine.getName());
+        });
+    }
+
+    @Transactional
     public void delete(Long id) {
         SpaceMarine spaceMarine = spaceMarineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, id));

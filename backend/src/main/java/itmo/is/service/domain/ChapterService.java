@@ -1,17 +1,29 @@
 package itmo.is.service.domain;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import itmo.is.dto.domain.ChapterDto;
 import itmo.is.dto.domain.request.CreateChapterRequest;
 import itmo.is.dto.domain.request.UpdateChapterRequest;
 import itmo.is.exception.EntityNotFoundWithIdException;
+import itmo.is.exception.UniqueConstraintViolationException;
 import itmo.is.mapper.domain.ChapterMapper;
 import itmo.is.model.domain.Chapter;
-import itmo.is.repository.ChapterRepository;
+import itmo.is.model.history.ChapterImportLog;
+import itmo.is.repository.domain.ChapterRepository;
+import itmo.is.service.history.ChapterImportHistoryService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Service
 @Transactional
@@ -19,6 +31,7 @@ import org.springframework.stereotype.Service;
 public class ChapterService {
     private final ChapterRepository chapterRepository;
     private final ChapterMapper chapterMapper;
+    private final ChapterImportHistoryService chapterImportHistoryService;
 
     public Page<ChapterDto> findAllWithFilters(String name, String parentLegion, Pageable pageable) {
         if (name != null && parentLegion != null) {
@@ -39,16 +52,52 @@ public class ChapterService {
                 .orElseThrow(() -> new EntityNotFoundWithIdException(Chapter.class, id));
     }
 
+    @Transactional
     public ChapterDto create(CreateChapterRequest request) {
-        var spaceMarine = chapterMapper.toEntity(request);
-        var saved = chapterRepository.save(spaceMarine);
+        var chapter = chapterMapper.toEntity(request);
+        validateUniqueChapterNameConstraint(chapter);
+        var saved = chapterRepository.save(chapter);
         return chapterMapper.toDto(saved);
     }
 
+    @Transactional
+    public void importFile(MultipartFile file) {
+        importChaptersLogProxy(parseFile(file));
+    }
+
+    private List<CreateChapterRequest> parseFile(MultipartFile file) {
+        try {
+            return new ObjectMapper().readValue(file.getBytes(), new TypeReference<>() {
+            });
+        } catch (JsonProcessingException e) {
+            throw new IllegalArgumentException("Invalid JSON file format", e);
+        } catch (IOException e) {
+            throw new RuntimeException("Error reading JSON file", e);
+        }
+    }
+
+    private void importChaptersLogProxy(List<CreateChapterRequest> requests) {
+        ChapterImportLog importLog = chapterImportHistoryService.createStartedImportLog();
+        importChapters(requests);
+        importLog.setSuccess(true);
+        importLog.setObjectsAdded(requests.size());
+        chapterImportHistoryService.saveFinishedImportLog(importLog);
+    }
+
+    private void importChapters(List<CreateChapterRequest> requests) {
+        List<Chapter> chapters = requests.stream().map(chapterMapper::toEntity).toList();
+        validateUniqueChapterNameConstraint(chapters);
+        chapterRepository.saveAll(chapters);
+    }
+
+    @Transactional
     public ChapterDto update(Long id, UpdateChapterRequest request) {
         var original = chapterRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundWithIdException(Chapter.class, id));
         var updated = chapterMapper.toEntity(request);
+        if (!original.getName().equals(updated.getName())) {
+            validateUniqueChapterNameConstraint(updated);
+        }
         updated.setId(id);
         updated.setOwner(original.getOwner());
         updated.setAdminEditAllowed(original.isAdminEditAllowed());
@@ -56,6 +105,25 @@ public class ChapterService {
         return chapterMapper.toDto(saved);
     }
 
+    private void validateUniqueChapterNameConstraint(Chapter chapter) {
+        if (chapterRepository.existsByName(chapter.getName())) {
+            throw new UniqueConstraintViolationException(Chapter.class, "name", chapter.getName());
+        }
+    }
+
+    private void validateUniqueChapterNameConstraint(List<Chapter> chapters) {
+        Set<String> names = new HashSet<>();
+        chapters.forEach(chapter -> {
+            if (!names.add(chapter.getName())) {
+                throw new UniqueConstraintViolationException(Chapter.class, "name", chapter.getName());
+            }
+        });
+        chapterRepository.findFirstByNameIn(names).ifPresent((spaceMarine) -> {
+            throw new UniqueConstraintViolationException(Chapter.class, "name", spaceMarine.getName());
+        });
+    }
+
+    @Transactional
     public void delete(Long id) {
         if (!chapterRepository.existsById(id)) {
             throw new EntityNotFoundWithIdException(Chapter.class, id);
@@ -63,10 +131,12 @@ public class ChapterService {
         chapterRepository.deleteById(id);
     }
 
+    @Transactional
     public void allowAdminEditing(Long id) {
         setAdminEditAllowed(id, true);
     }
 
+    @Transactional
     public void denyAdminEditing(Long id) {
         setAdminEditAllowed(id, false);
     }

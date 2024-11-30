@@ -1,7 +1,7 @@
 package itmo.is.service.security.authorization;
 
 import itmo.is.model.domain.Chapter;
-import itmo.is.repository.ChapterRepository;
+import itmo.is.repository.domain.ChapterRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

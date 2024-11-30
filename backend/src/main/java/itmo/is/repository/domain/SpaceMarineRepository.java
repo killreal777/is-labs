@@ -1,4 +1,4 @@
-package itmo.is.repository;
+package itmo.is.repository.domain;
 
 import itmo.is.model.domain.SpaceMarine;
 import org.springframework.data.domain.Page;
