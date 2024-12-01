@@ -1,25 +1,32 @@
 package itmo.is.dto.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import itmo.is.dto.authentication.UserDto;
 
 public record ChapterDto(
-        @JsonProperty("id")
+
+        @Schema(example = "1")
+        @JsonProperty(value = "id", required = true)
         Long id,
 
-        @JsonProperty("name")
+        @Schema(example = "Operation Systems Chapter")
+        @JsonProperty(value = "name", required = true)
         String name,
 
-        @JsonProperty("parent_legion")
+        @Schema(example = "Klimenkov's Legion")
+        @JsonProperty(value = "parent_legion", required = false)
         String parentLegion,
 
-        @JsonProperty("marines_count")
+        @Schema(example = "1000")
+        @JsonProperty(value = "marines_count", required = true)
         long marinesCount,
 
-        @JsonProperty("owner")
+        @JsonProperty(value = "owner", required = true)
         UserDto owner,
 
-        @JsonProperty("admin_edit_allowed")
+        @Schema(example = "false")
+        @JsonProperty(value = "admin_edit_allowed", required = true)
         boolean adminEditAllowed
 ) {
 }

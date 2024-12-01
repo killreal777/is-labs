@@ -1,12 +1,16 @@
 package itmo.is.dto.authentication;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 public record UserDto(
-        @JsonProperty("id")
+
+        @Schema(example = "1")
+        @JsonProperty(value = "id", required = true)
         Long id,
 
-        @JsonProperty("username")
+        @Schema(example = "killreal777")
+        @JsonProperty(value = "username", required = true)
         String username
 ) {
 }

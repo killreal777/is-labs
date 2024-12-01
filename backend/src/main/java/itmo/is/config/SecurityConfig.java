@@ -1,6 +1,6 @@
 package itmo.is.config;
 
-import itmo.is.repository.UserRepository;
+import itmo.is.repository.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

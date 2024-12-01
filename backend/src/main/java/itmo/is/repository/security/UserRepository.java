@@ -1,4 +1,4 @@
-package itmo.is.repository;
+package itmo.is.repository.security;
 
 import itmo.is.model.security.Role;
 import itmo.is.model.security.User;

@@ -7,7 +7,7 @@ import itmo.is.dto.authentication.UserDto;
 import itmo.is.mapper.security.UserMapper;
 import itmo.is.model.security.Role;
 import itmo.is.model.security.User;
-import itmo.is.repository.UserRepository;
+import itmo.is.repository.security.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;

@@ -1,4 +1,4 @@
-package itmo.is.handler;
+package itmo.is.exception;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;

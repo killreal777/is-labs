@@ -3,21 +3,29 @@ package itmo.is.controller;
 import itmo.is.dto.domain.ChapterDto;
 import itmo.is.dto.domain.request.CreateChapterRequest;
 import itmo.is.dto.domain.request.UpdateChapterRequest;
+import itmo.is.dto.history.ImportLogDto;
+import itmo.is.model.security.Role;
+import itmo.is.model.security.User;
 import itmo.is.service.domain.ChapterService;
+import itmo.is.service.history.ChapterImportHistoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("api/chapters")
 @RequiredArgsConstructor
 public class ChapterRestController {
     private final ChapterService chapterService;
+    private final ChapterImportHistoryService chapterImportHistoryService;
 
     @GetMapping
     public ResponseEntity<Page<ChapterDto>> findAll(
@@ -36,6 +44,26 @@ public class ChapterRestController {
     @PostMapping
     public ResponseEntity<ChapterDto> create(@RequestBody CreateChapterRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(chapterService.create(request));
+    }
+
+    @PostMapping(value = "/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Void> importFile(@RequestPart("file") MultipartFile file) {
+        chapterService.importFile(file);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping(value = "/import")
+    public ResponseEntity<Page<ImportLogDto>> findAllImports(
+            @AuthenticationPrincipal User user,
+            @PageableDefault Pageable pageable
+    ) {
+        Page<ImportLogDto> result;
+        if (user.getRole() == Role.ROLE_ADMIN) {
+            result = chapterImportHistoryService.findAll(pageable);
+        } else {
+            result = chapterImportHistoryService.findAllByUser(user, pageable);
+        }
+        return ResponseEntity.ok(result);
     }
 
     @PreAuthorize("@chapterSecurityService.hasEditRights(#id)")

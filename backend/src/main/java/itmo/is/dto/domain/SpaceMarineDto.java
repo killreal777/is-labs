@@ -1,38 +1,44 @@
 package itmo.is.dto.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.swagger.v3.oas.annotations.media.Schema;
 import itmo.is.dto.authentication.UserDto;
 import itmo.is.model.domain.AstartesCategory;
 
 public record SpaceMarineDto(
-        @JsonProperty("id")
+
+        @Schema(example = "1")
+        @JsonProperty(value = "id", required = true)
         Long id,
 
-        @JsonProperty("name")
+        @Schema(example = "Kirill Kravtsov")
+        @JsonProperty(value = "name", required = true)
         String name,
 
-        @JsonProperty("coordinates")
+        @JsonProperty(value = "coordinates", required = true)
         CoordinatesDto coordinates,
 
-        @JsonProperty("chapter")
-        ChapterDto chapter,
-
-        @JsonProperty("health")
+        @Schema(example = "100")
+        @JsonProperty(value = "health", required = true)
         Double health,
 
-        @JsonProperty("loyal")
+        @Schema(example = "true")
+        @JsonProperty(value = "loyal", required = false)
         boolean loyal,
 
-        @JsonProperty("height")
+        @Schema(example = "175")
+        @JsonProperty(value = "height", required = true)
         Integer height,
 
-        @JsonProperty("category")
+        @Schema(example = "HELIX")
+        @JsonProperty(value = "category", required = false)
         AstartesCategory category,
 
-        @JsonProperty("owner")
+        @JsonProperty(value = "owner", required = true)
         UserDto owner,
 
-        @JsonProperty("admin_edit_allowed")
+        @Schema(example = "true")
+        @JsonProperty(value = "admin_edit_allowed", required = true)
         boolean adminEditAllowed
 ) {
 }

@@ -3,16 +3,22 @@ package itmo.is.controller;
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
+import itmo.is.dto.history.ImportLogDto;
+import itmo.is.model.security.Role;
+import itmo.is.model.security.User;
+import itmo.is.service.history.SpaceMarineImportHistoryService;
 import itmo.is.service.domain.SpaceMarineService;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Map;
@@ -22,6 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 public class SpaceMarineRestController {
     private final SpaceMarineService spaceMarineService;
+    private final SpaceMarineImportHistoryService spaceMarineImportHistoryService;
 
     @GetMapping
     public ResponseEntity<Page<SpaceMarineDto>> findAll(
@@ -39,6 +46,26 @@ public class SpaceMarineRestController {
     @PostMapping
     public ResponseEntity<SpaceMarineDto> create(@RequestBody CreateSpaceMarineRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(spaceMarineService.create(request));
+    }
+
+    @PostMapping(value = "/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<Void> importBulk(@RequestPart("file") MultipartFile file) {
+        spaceMarineService.importFile(file);
+        return ResponseEntity.status(HttpStatus.CREATED).build();
+    }
+
+    @GetMapping(value = "/import")
+    public ResponseEntity<Page<ImportLogDto>> findAllImports(
+            @AuthenticationPrincipal User user,
+            @PageableDefault Pageable pageable
+    ) {
+        Page<ImportLogDto> result;
+        if (user.getRole() == Role.ROLE_ADMIN) {
+            result = spaceMarineImportHistoryService.findAll(pageable);
+        } else {
+            result = spaceMarineImportHistoryService.findAllByUser(user, pageable);
+        }
+        return ResponseEntity.ok(result);
     }
 
     @PreAuthorize("@spaceMarineSecurityService.hasEditRights(#id)")
