@@ -13,7 +13,8 @@ import itmo.is.model.domain.Chapter;
 import itmo.is.model.history.ChapterImportLog;
 import itmo.is.repository.domain.ChapterRepository;
 import itmo.is.service.history.ChapterImportHistoryService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,7 @@ public class ChapterService {
     private final ChapterMapper chapterMapper;
     private final ChapterImportHistoryService chapterImportHistoryService;
 
+    @Transactional
     public Page<ChapterDto> findAllWithFilters(String name, String parentLegion, Pageable pageable) {
         if (name != null && parentLegion != null) {
             return chapterRepository.findAllByNameAndParentLegion(name, parentLegion, pageable).map(chapterMapper::toDto);
@@ -46,13 +48,14 @@ public class ChapterService {
         return chapterRepository.findAll(pageable).map(chapterMapper::toDto);
     }
 
+    @Transactional
     public ChapterDto findById(Long id) {
         return chapterRepository.findById(id)
                 .map(chapterMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundWithIdException(Chapter.class, id));
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public ChapterDto create(CreateChapterRequest request) {
         var chapter = chapterMapper.toEntity(request);
         validateUniqueChapterNameConstraint(chapter);
@@ -60,7 +63,7 @@ public class ChapterService {
         return chapterMapper.toDto(saved);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void importFile(MultipartFile file) {
         importChaptersLogProxy(parseFile(file));
     }
@@ -90,7 +93,7 @@ public class ChapterService {
         chapterRepository.saveAll(chapters);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public ChapterDto update(Long id, UpdateChapterRequest request) {
         var original = chapterRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundWithIdException(Chapter.class, id));
@@ -148,6 +151,7 @@ public class ChapterService {
         chapterRepository.save(chapter);
     }
 
+    @Transactional
     public Page<ChapterDto> findAllByNameContaining(String substring, Pageable pageable) {
         return chapterRepository.findAllByNameContaining(substring, pageable).map(chapterMapper::toDto);
     }

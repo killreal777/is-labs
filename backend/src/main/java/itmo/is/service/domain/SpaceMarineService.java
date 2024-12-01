@@ -15,12 +15,13 @@ import itmo.is.model.history.SpaceMarineImportLog;
 import itmo.is.repository.domain.ChapterRepository;
 import itmo.is.repository.domain.SpaceMarineRepository;
 import itmo.is.service.history.SpaceMarineImportHistoryService;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -40,6 +41,7 @@ public class SpaceMarineService {
     private final ChapterRepository chapterRepository;
     private final SpaceMarineImportHistoryService spaceMarineImportHistoryService;
 
+    @Transactional
     public Page<SpaceMarineDto> findAllWithFilters(String name, Pageable pageable) {
         if (name != null) {
             return spaceMarineRepository.findAllByName(name, pageable).map(spaceMarineMapper::toDto);
@@ -47,13 +49,14 @@ public class SpaceMarineService {
         return spaceMarineRepository.findAll(pageable).map(spaceMarineMapper::toDto);
     }
 
+    @Transactional
     public SpaceMarineDto findById(Long id) {
         return spaceMarineRepository.findById(id)
                 .map(spaceMarineMapper::toDto)
                 .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, id));
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public SpaceMarineDto create(CreateSpaceMarineRequest request) {
         var spaceMarine = spaceMarineMapper.toEntity(request);
         validateUniqueSpaceMarineNameConstraint(spaceMarine);
@@ -61,7 +64,7 @@ public class SpaceMarineService {
         return spaceMarineMapper.toDto(saved);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void importFile(MultipartFile file) {
         importSpaceMarinesLogProxy(parseFile(file));
     }
@@ -91,7 +94,7 @@ public class SpaceMarineService {
         spaceMarineRepository.saveAll(spaceMarines);
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public SpaceMarineDto update(Long id, UpdateSpaceMarineRequest request) {
         var original = spaceMarineRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, id));
@@ -135,10 +138,12 @@ public class SpaceMarineService {
         spaceMarineRepository.deleteById(id);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void allowAdminEditing(Long id) {
         setAdminEditAllowed(id, true);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void denyAdminEditing(Long id) {
         setAdminEditAllowed(id, false);
     }
@@ -150,6 +155,7 @@ public class SpaceMarineService {
         spaceMarineRepository.save(chapter);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void enroll(Long spaceMarineId, Long chapterId) {
         SpaceMarine spaceMarine = spaceMarineRepository.findById(spaceMarineId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, spaceMarineId));
@@ -166,6 +172,7 @@ public class SpaceMarineService {
         spaceMarineRepository.save(spaceMarine);
     }
 
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void expel(Long spaceMarineId) {
         SpaceMarine spaceMarine = spaceMarineRepository.findById(spaceMarineId)
                 .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, spaceMarineId));
@@ -181,6 +188,7 @@ public class SpaceMarineService {
         spaceMarineRepository.save(spaceMarine);
     }
 
+    @Transactional
     public Map<LocalDate, Integer> countByCreationDate() {
         return spaceMarineRepository.countByCreationDateGrouped().stream()
                 .collect(Collectors.toMap(
@@ -189,14 +197,17 @@ public class SpaceMarineService {
                 ));
     }
 
+    @Transactional
     public Page<SpaceMarineDto> findAllByNameContaining(String substring, Pageable pageable) {
         return spaceMarineRepository.findAllByNameContaining(substring, pageable).map(spaceMarineMapper::toDto);
     }
 
+    @Transactional
     public Page<SpaceMarineDto> findAllLoyal(Pageable pageable) {
         return spaceMarineRepository.findAllByLoyal(true, pageable).map(spaceMarineMapper::toDto);
     }
 
+    @Transactional
     public Page<SpaceMarineDto> findAllDisloyal(Pageable pageable) {
         return spaceMarineRepository.findAllByLoyal(false, pageable).map(spaceMarineMapper::toDto);
     }
