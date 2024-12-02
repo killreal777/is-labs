@@ -78,7 +78,7 @@ public class SpaceMarineRestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         spaceMarineService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("@spaceMarineSecurityService.isOwner(#id)")

@@ -79,7 +79,7 @@ public class ChapterRestController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         chapterService.delete(id);
-        return ResponseEntity.ok().build();
+        return ResponseEntity.noContent().build();
     }
 
     @PreAuthorize("@chapterSecurityService.isOwner(#id)")

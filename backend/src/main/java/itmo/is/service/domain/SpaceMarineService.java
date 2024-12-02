@@ -15,13 +15,12 @@ import itmo.is.model.history.SpaceMarineImportLog;
 import itmo.is.repository.domain.ChapterRepository;
 import itmo.is.repository.domain.SpaceMarineRepository;
 import itmo.is.service.history.SpaceMarineImportHistoryService;
-import org.springframework.transaction.annotation.Transactional;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -127,15 +126,14 @@ public class SpaceMarineService {
         });
     }
 
-    @Transactional
+    @Transactional(isolation = Isolation.SERIALIZABLE)
     public void delete(Long id) {
-        SpaceMarine spaceMarine = spaceMarineRepository.findById(id)
-                .orElseThrow(() -> new EntityNotFoundWithIdException(SpaceMarine.class, id));
-
-        if (spaceMarine.getChapter() != null) {
-            decrementMarinesCount(spaceMarine.getChapter());
-        }
-        spaceMarineRepository.deleteById(id);
+        spaceMarineRepository.findById(id).ifPresent(spaceMarine -> {
+            if (spaceMarine.getChapter() != null) {
+                decrementMarinesCount(spaceMarine.getChapter());
+            }
+            spaceMarineRepository.deleteById(id);
+        });
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)

@@ -8,7 +8,7 @@ spring:
   jpa:
     generate-ddl: ${SPRING_JPA_GENERATE_DDL:true}
     hibernate:
-      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:create-drop}
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:update}
     show-sql: ${SPRING_JPA_SHOW_SQL:false}
     properties:
       hibernate:
@@ -21,6 +21,8 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:15432/studs}
     username: ${SPRING_DATASOURCE_USERNAME:s333291}
     password: ${SPRING_DATASOURCE_PASSWORD:qwerty12345}
+    hikari:
+      leakDetectionThreshold: 50
 
   servlet:
     multipart:
