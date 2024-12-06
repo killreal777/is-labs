@@ -10,7 +10,7 @@
     </parent>
 
     <groupId>itmo.is</groupId>
-    <artifactId>is-lab1</artifactId>
+    <artifactId>is-labs</artifactId>
     <version>${revision}</version>
 
     <properties>

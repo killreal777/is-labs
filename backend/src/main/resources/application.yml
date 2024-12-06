@@ -3,7 +3,7 @@ server:
 
 spring:
   application:
-    name: is-lab1
+    name: is-labs
 
   jpa:
     generate-ddl: ${SPRING_JPA_GENERATE_DDL:true}
