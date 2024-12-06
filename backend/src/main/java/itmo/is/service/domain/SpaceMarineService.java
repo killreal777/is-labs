@@ -58,14 +58,14 @@ public class SpaceMarineService {
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public SpaceMarineDto create(CreateSpaceMarineRequest request) {
         var spaceMarine = spaceMarineMapper.toEntity(request);
-        validateUniqueSpaceMarineNameConstraint(spaceMarine);
+        validateUniqueSpaceMarineNameConstraint(spaceMarine); // ТЗ: реализовать ограничение уникальности в рамках бизнес-логики
         var saved = spaceMarineRepository.save(spaceMarine);
         return spaceMarineMapper.toDto(saved);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
     public void importFile(MultipartFile file) {
-        importSpaceMarinesLogProxy(parseFile(file));
+        importSpaceMarinesHistoryProxy(parseFile(file));
     }
 
     private List<CreateSpaceMarineRequest> parseFile(MultipartFile file) {
@@ -79,7 +79,7 @@ public class SpaceMarineService {
         }
     }
 
-    private void importSpaceMarinesLogProxy(List<CreateSpaceMarineRequest> requests) {
+    private void importSpaceMarinesHistoryProxy(List<CreateSpaceMarineRequest> requests) {
         SpaceMarineImportLog importLog = spaceMarineImportHistoryService.createStartedImportLog();
         importSpaceMarines(requests);
         importLog.setSuccess(true);
@@ -89,7 +89,7 @@ public class SpaceMarineService {
 
     private void importSpaceMarines(List<CreateSpaceMarineRequest> requests) {
         List<SpaceMarine> spaceMarines = requests.stream().map(spaceMarineMapper::toEntity).toList();
-        validateUniqueSpaceMarineNameConstraint(spaceMarines);
+        validateUniqueSpaceMarineNameConstraint(spaceMarines); // ТЗ: реализовать ограничение уникальности в рамках бизнес-логики
         spaceMarineRepository.saveAll(spaceMarines);
     }
 

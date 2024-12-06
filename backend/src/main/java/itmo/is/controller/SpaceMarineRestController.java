@@ -49,7 +49,7 @@ public class SpaceMarineRestController {
     }
 
     @PostMapping(value = "/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Void> importBulk(@RequestPart("file") MultipartFile file) {
+    public ResponseEntity<Void> importFile(@RequestPart("file") MultipartFile file) {
         spaceMarineService.importFile(file);
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
