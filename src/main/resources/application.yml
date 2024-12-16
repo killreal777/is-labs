@@ -14,8 +14,6 @@ spring:
       hibernate:
         dialect: ${SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT:org.hibernate.dialect.PostgreSQLDialect}
         jdbc.lob.non_contextual_creation: ${SPRING_JPA_PROPERTIES_HIBERNATE_JDBC_LOB_NON_CONTEXTUAL_CREATION:true}
-        connection:
-          isolation: 2 # read commited
 
   datasource:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:15432/studs}
@@ -28,6 +26,15 @@ spring:
     multipart:
       max-file-size: 20MB
       max-request-size: 20MB
+
+  cloud:
+    aws:
+      credentials:
+        access-key: ${SPRING_CLOUD_AWS_CREDENTIALS_ACCESS_KEY}
+        secret-key: ${SPRING_CLOUD_AWS_CREDENTIALS_SECRET_KEY}
+      region:
+        static: ru-central1
+      endpoint: https://storage.yandexcloud.net
 
 application:
   security:
