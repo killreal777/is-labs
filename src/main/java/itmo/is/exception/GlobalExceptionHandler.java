@@ -29,37 +29,37 @@ import java.util.NoSuchElementException;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(EntityNotFoundException.class)
     public String handleEntityNotFoundException(EntityNotFoundException e) {
         return "Entity not found: " + e.getMessage();
     }
 
-    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoSuchElementException.class)
     public String handleNoSuchElementException(NoSuchElementException e) {
         return "No such element: " + e.getMessage();
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(IllegalArgumentException.class)
     public String handleIllegalArgumentException(IllegalArgumentException e) {
         return "Illegal argument: " + e.getMessage();
     }
 
-    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(IllegalStateException.class)
     public String handleIllegalStateException(IllegalStateException e) {
         return "Illegal state: " + e.getMessage();
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler({HttpMessageConversionException.class, MethodArgumentTypeMismatchException.class})
     public String handleInvalidRequestExceptions(Exception e) {
         return "Invalid request: " + e.getMessage();
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public Map<String, String> handleValidationException(MethodArgumentNotValidException e) {
         Map<String, String> errors = new HashMap<>();
@@ -71,56 +71,56 @@ public class GlobalExceptionHandler {
         return errors;
     }
 
-    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(ConstraintViolationException.class)
     public List<String> handleConstraintViolationException(ConstraintViolationException e) {
         return e.getConstraintViolations().stream()
                 .map(ConstraintViolation::getMessage).toList();
     }
 
-    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AuthenticationException.class)
     public String handleAuthenticationException(AuthenticationException e) {
         return "Cannot authenticate: " + e.getMessage();
     }
 
-    @ResponseStatus(value = HttpStatus.FORBIDDEN)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AuthorizationDeniedException.class)
     public String handleAuthorizationDeniedException(AuthorizationDeniedException e) {
         return e.getMessage();
     }
 
-    @ResponseStatus(value = HttpStatus.CONFLICT)
+    @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UniqueConstraintViolationException.class)
     public String handleUniqueConstraintViolationException(UniqueConstraintViolationException e) {
         return "Unique constraint violation: " + e.getMessage();
     }
 
-    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ExceptionHandler(SQLException.class)
     public String handleSQLException(Exception e) {
         return "Database error occurred. Please contact support if the issue persists.";
     }
 
-    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ExceptionHandler({LockAcquisitionException.class, CannotAcquireLockException.class})
     public String handleLockException(LockAcquisitionException e) {
         return "The resource is currently locked by another operation";
     }
 
-    @ResponseStatus(value = HttpStatus.SERVICE_UNAVAILABLE)
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ExceptionHandler(StaleObjectStateException.class)
     public String handleStaleObjectStateException(StaleObjectStateException e) {
         return "The resource has been updated or deleted by another transaction";
     }
 
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(S3Exception.class)
     public String handleS3Exception(S3Exception e) {
         return "S3 exception: " + e.getMessage();
     }
 
-    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ExceptionHandler(Exception.class)
     public String handleException(Exception e) {
         log.error(e.getMessage(), e);
