@@ -4,6 +4,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "chapters_import")
-public class ChapterImportLog extends ImportLog {
+@Table(name = "marines_import")
+public class SpaceMarineImport extends Import {
 }

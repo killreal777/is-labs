@@ -10,7 +10,7 @@ import itmo.is.exception.EntityNotFoundWithIdException;
 import itmo.is.exception.UniqueConstraintViolationException;
 import itmo.is.mapper.domain.ChapterMapper;
 import itmo.is.model.domain.Chapter;
-import itmo.is.model.history.ChapterImportLog;
+import itmo.is.model.history.ChapterImport;
 import itmo.is.repository.domain.ChapterRepository;
 import itmo.is.service.history.ChapterImportHistoryService;
 import lombok.RequiredArgsConstructor;
@@ -80,7 +80,7 @@ public class ChapterService {
     }
 
     private void importChaptersLogProxy(List<CreateChapterRequest> requests) {
-        ChapterImportLog importLog = chapterImportHistoryService.createStartedImportLog();
+        ChapterImport importLog = chapterImportHistoryService.createStartedImportLog();
         importChapters(requests);
         importLog.setSuccess(true);
         importLog.setObjectsAdded(requests.size());

@@ -11,7 +11,7 @@ import itmo.is.exception.UniqueConstraintViolationException;
 import itmo.is.mapper.domain.SpaceMarineMapper;
 import itmo.is.model.domain.Chapter;
 import itmo.is.model.domain.SpaceMarine;
-import itmo.is.model.history.SpaceMarineImportLog;
+import itmo.is.model.history.SpaceMarineImport;
 import itmo.is.repository.domain.ChapterRepository;
 import itmo.is.repository.domain.SpaceMarineRepository;
 import itmo.is.service.history.SpaceMarineImportHistoryService;
@@ -80,7 +80,7 @@ public class SpaceMarineService {
     }
 
     private void importSpaceMarinesHistoryProxy(List<CreateSpaceMarineRequest> requests) {
-        SpaceMarineImportLog importLog = spaceMarineImportHistoryService.createStartedImportLog();
+        SpaceMarineImport importLog = spaceMarineImportHistoryService.createStartedImportLog();
         importSpaceMarines(requests);
         importLog.setSuccess(true);
         importLog.setObjectsAdded(requests.size());

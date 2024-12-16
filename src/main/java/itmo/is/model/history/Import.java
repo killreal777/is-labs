@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public abstract class ImportLog {
+public abstract class Import {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
