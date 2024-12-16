@@ -6,7 +6,7 @@ import itmo.is.dto.authentication.UserDto;
 
 import java.time.LocalDateTime;
 
-public record ImportLogDto(
+public record ImportDto(
         @Schema(example = "1")
         @JsonProperty(value = "id", required = true)
         Long id,

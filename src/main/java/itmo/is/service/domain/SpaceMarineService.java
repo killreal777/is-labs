@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
+import itmo.is.dto.history.ImportDto;
 import itmo.is.exception.EntityNotFoundWithIdException;
 import itmo.is.exception.UniqueConstraintViolationException;
 import itmo.is.mapper.domain.SpaceMarineMapper;
@@ -16,6 +17,7 @@ import itmo.is.repository.domain.ChapterRepository;
 import itmo.is.repository.domain.SpaceMarineRepository;
 import itmo.is.service.history.SpaceMarineImportHistoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -64,8 +66,14 @@ public class SpaceMarineService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void importFile(MultipartFile file) {
-        importSpaceMarinesHistoryProxy(parseFile(file));
+    public ImportDto importFile(MultipartFile file) {
+        SpaceMarineImport importLog = spaceMarineImportHistoryService.createStartedImportLog();
+        List<CreateSpaceMarineRequest> requests = parseFile(file);
+        importSpaceMarines(requests);
+        importLog.setSuccess(true);
+        importLog.setObjectsAdded(requests.size());
+        spaceMarineImportHistoryService.saveImportFile(file, importLog);
+        return spaceMarineImportHistoryService.saveFinishedImportLog(importLog);
     }
 
     private List<CreateSpaceMarineRequest> parseFile(MultipartFile file) {
@@ -79,18 +87,14 @@ public class SpaceMarineService {
         }
     }
 
-    private void importSpaceMarinesHistoryProxy(List<CreateSpaceMarineRequest> requests) {
-        SpaceMarineImport importLog = spaceMarineImportHistoryService.createStartedImportLog();
-        importSpaceMarines(requests);
-        importLog.setSuccess(true);
-        importLog.setObjectsAdded(requests.size());
-        spaceMarineImportHistoryService.saveFinishedImportLog(importLog);
-    }
-
     private void importSpaceMarines(List<CreateSpaceMarineRequest> requests) {
         List<SpaceMarine> spaceMarines = requests.stream().map(spaceMarineMapper::toEntity).toList();
         validateUniqueSpaceMarineNameConstraint(spaceMarines); // ТЗ: реализовать ограничение уникальности в рамках бизнес-логики
         spaceMarineRepository.saveAll(spaceMarines);
+    }
+
+    public ByteArrayResource getImportFileByImportId(Long importId) {
+        return spaceMarineImportHistoryService.getFileByImportId(importId);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)

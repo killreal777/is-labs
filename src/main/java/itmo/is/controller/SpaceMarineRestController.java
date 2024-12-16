@@ -3,18 +3,17 @@ package itmo.is.controller;
 import itmo.is.dto.domain.SpaceMarineDto;
 import itmo.is.dto.domain.request.CreateSpaceMarineRequest;
 import itmo.is.dto.domain.request.UpdateSpaceMarineRequest;
-import itmo.is.dto.history.ImportLogDto;
+import itmo.is.dto.history.ImportDto;
 import itmo.is.model.security.Role;
 import itmo.is.model.security.User;
 import itmo.is.service.history.SpaceMarineImportHistoryService;
 import itmo.is.service.domain.SpaceMarineService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -48,24 +47,38 @@ public class SpaceMarineRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(spaceMarineService.create(request));
     }
 
-    @PostMapping(value = "/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Void> importFile(@RequestPart("file") MultipartFile file) {
-        spaceMarineService.importFile(file);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PostMapping(value = "/imports", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ImportDto> importFile(@RequestPart("file") MultipartFile file) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(spaceMarineService.importFile(file));
     }
 
-    @GetMapping(value = "/import")
-    public ResponseEntity<Page<ImportLogDto>> findAllImports(
+    @GetMapping("/imports")
+    public ResponseEntity<Page<ImportDto>> findAllImports(
             @AuthenticationPrincipal User user,
             @PageableDefault Pageable pageable
     ) {
-        Page<ImportLogDto> result;
+        Page<ImportDto> result;
         if (user.getRole() == Role.ROLE_ADMIN) {
-            result = spaceMarineImportHistoryService.findAll(pageable);
+            result = spaceMarineImportHistoryService.findAllImportLogs(pageable);
         } else {
-            result = spaceMarineImportHistoryService.findAllByUser(user, pageable);
+            result = spaceMarineImportHistoryService.findAllImportLogsByUser(user, pageable);
         }
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/imports/{id}/file")
+    public ResponseEntity<ByteArrayResource> getFileByImportId(@PathVariable Long id) {
+        ByteArrayResource file = spaceMarineService.getImportFileByImportId(id);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentDisposition(ContentDisposition.builder("attachment")
+                .filename("marines-import-" + id + ".json")
+                .build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(file);
     }
 
     @PreAuthorize("@spaceMarineSecurityService.hasEditRights(#id)")

@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import itmo.is.dto.domain.ChapterDto;
 import itmo.is.dto.domain.request.CreateChapterRequest;
 import itmo.is.dto.domain.request.UpdateChapterRequest;
+import itmo.is.dto.history.ImportDto;
 import itmo.is.exception.EntityNotFoundWithIdException;
 import itmo.is.exception.UniqueConstraintViolationException;
 import itmo.is.mapper.domain.ChapterMapper;
@@ -14,6 +15,7 @@ import itmo.is.model.history.ChapterImport;
 import itmo.is.repository.domain.ChapterRepository;
 import itmo.is.service.history.ChapterImportHistoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -64,8 +66,14 @@ public class ChapterService {
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)
-    public void importFile(MultipartFile file) {
-        importChaptersLogProxy(parseFile(file));
+    public ImportDto importFile(MultipartFile file) {
+        ChapterImport importLog = chapterImportHistoryService.createStartedImportLog();
+        List<CreateChapterRequest> requests = parseFile(file);
+        importChapters(requests);
+        importLog.setSuccess(true);
+        importLog.setObjectsAdded(requests.size());
+        chapterImportHistoryService.saveImportFile(file, importLog);
+        return chapterImportHistoryService.saveFinishedImportLog(importLog);
     }
 
     private List<CreateChapterRequest> parseFile(MultipartFile file) {
@@ -79,18 +87,14 @@ public class ChapterService {
         }
     }
 
-    private void importChaptersLogProxy(List<CreateChapterRequest> requests) {
-        ChapterImport importLog = chapterImportHistoryService.createStartedImportLog();
-        importChapters(requests);
-        importLog.setSuccess(true);
-        importLog.setObjectsAdded(requests.size());
-        chapterImportHistoryService.saveFinishedImportLog(importLog);
-    }
-
     private void importChapters(List<CreateChapterRequest> requests) {
         List<Chapter> chapters = requests.stream().map(chapterMapper::toEntity).toList();
         validateUniqueChapterNameConstraint(chapters);
         chapterRepository.saveAll(chapters);
+    }
+
+    public ByteArrayResource getImportFileByImportId(Long importId) {
+        return chapterImportHistoryService.getFileByImportId(importId);
     }
 
     @Transactional(isolation = Isolation.SERIALIZABLE)

@@ -3,18 +3,17 @@ package itmo.is.controller;
 import itmo.is.dto.domain.ChapterDto;
 import itmo.is.dto.domain.request.CreateChapterRequest;
 import itmo.is.dto.domain.request.UpdateChapterRequest;
-import itmo.is.dto.history.ImportLogDto;
+import itmo.is.dto.history.ImportDto;
 import itmo.is.model.security.Role;
 import itmo.is.model.security.User;
 import itmo.is.service.domain.ChapterService;
 import itmo.is.service.history.ChapterImportHistoryService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -46,24 +45,38 @@ public class ChapterRestController {
         return ResponseEntity.status(HttpStatus.CREATED).body(chapterService.create(request));
     }
 
-    @PostMapping(value = "/import", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
-    public ResponseEntity<Void> importFile(@RequestPart("file") MultipartFile file) {
-        chapterService.importFile(file);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PostMapping(value = "/imports", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+    public ResponseEntity<ImportDto> importFile(@RequestPart("file") MultipartFile file) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(chapterService.importFile(file));
     }
 
-    @GetMapping(value = "/import")
-    public ResponseEntity<Page<ImportLogDto>> findAllImports(
+    @GetMapping("/imports")
+    public ResponseEntity<Page<ImportDto>> findAllImports(
             @AuthenticationPrincipal User user,
             @PageableDefault Pageable pageable
     ) {
-        Page<ImportLogDto> result;
+        Page<ImportDto> result;
         if (user.getRole() == Role.ROLE_ADMIN) {
-            result = chapterImportHistoryService.findAll(pageable);
+            result = chapterImportHistoryService.findAllImportLogs(pageable);
         } else {
-            result = chapterImportHistoryService.findAllByUser(user, pageable);
+            result = chapterImportHistoryService.findAllImportLogsByUser(user, pageable);
         }
         return ResponseEntity.ok(result);
+    }
+
+    @GetMapping("/imports/{id}/file")
+    public ResponseEntity<ByteArrayResource> getFileByImportId(@PathVariable Long id) {
+        ByteArrayResource file = chapterService.getImportFileByImportId(id);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.setContentDisposition(ContentDisposition.builder("attachment")
+                .filename("chapter-import-" + id + ".json")
+                .build());
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(file);
     }
 
     @PreAuthorize("@chapterSecurityService.hasEditRights(#id)")

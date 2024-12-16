@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import software.amazon.awssdk.services.s3.model.S3Exception;
 
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -111,6 +112,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(StaleObjectStateException.class)
     public String handleStaleObjectStateException(StaleObjectStateException e) {
         return "The resource has been updated or deleted by another transaction";
+    }
+
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(S3Exception.class)
+    public String handleS3Exception(S3Exception e) {
+        return "S3 exception: " + e.getMessage();
     }
 
     @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
