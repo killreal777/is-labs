@@ -104,7 +104,7 @@ public class GlobalExceptionHandler {
 
     @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
     @ExceptionHandler({LockAcquisitionException.class, CannotAcquireLockException.class})
-    public String handleLockException(LockAcquisitionException e) {
+    public String handleLockException(Exception e) {
         return "The resource is currently locked by another operation";
     }
 
