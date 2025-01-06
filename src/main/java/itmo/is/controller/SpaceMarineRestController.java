@@ -22,7 +22,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.time.LocalDate;
 import java.util.Map;
 
-@CrossOrigin
 @RestController
 @RequestMapping("api/space-marines")
 @RequiredArgsConstructor
