@@ -1,3 +1,16 @@
+# Информационная система для учета космических десантников
+
+## Технологии
+
+**Spring**: Boot, Web, Data JPA, Security + JWT;
+
+AWS S3, SQL, PostgreSQL, Docker, Swagger, Maven
+
+## API
+
+### Swagger
+![swagger.png](docs/api/swagger.png)
+
 # Информационные системы
 
 ## Лабораторная работа №1
