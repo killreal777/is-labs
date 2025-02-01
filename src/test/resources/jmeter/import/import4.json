@@ -1,0 +1,62 @@
+[
+    {
+        "name": "Marine 4.1",
+        "coordinates": {
+            "x": 4,
+            "y": 1
+        },
+        "health": 41,
+        "loyal": true,
+        "height": 175,
+        "category": "HELIX",
+        "adminEditAllowed": true
+    },
+    {
+        "name": "Marine 4.2",
+        "coordinates": {
+            "x": 4,
+            "y": 2
+        },
+        "health": 42,
+        "loyal": true,
+        "height": 175,
+        "category": "HELIX",
+        "adminEditAllowed": true
+    },
+    {
+        "name": "Marine 4.3",
+        "coordinates": {
+            "x": 4,
+            "y": 3
+        },
+        "health": 43,
+        "loyal": true,
+        "height": 175,
+        "category": "HELIX",
+        "adminEditAllowed": true
+    },
+    {
+        "name": "Marine 4.4",
+        "coordinates": {
+            "x": 4,
+            "y": 4
+        },
+        "health": 44,
+        "loyal": true,
+        "height": 175,
+        "category": "HELIX",
+        "adminEditAllowed": true
+    },
+    {
+        "name": "Marine 4.5",
+        "coordinates": {
+            "x": 4,
+            "y": 5
+        },
+        "health": 45,
+        "loyal": true,
+        "height": 175,
+        "category": "HELIX",
+        "adminEditAllowed": true
+    }
+]

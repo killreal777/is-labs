@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Kirill Kravtsov",
+        "coordinates": {
+            "x": 5,
+            "y": 1
+        },
+        "health": 51,
+        "loyal": true,
+        "height": 175,
+        "category": "HELIX",
+        "adminEditAllowed": true
+    },    
+    {
+        "name": "Kirill Kravtsov",
+        "coordinates": {
+            "x": 5,
+            "y": 1
+        },
+        "health": 51,
+        "loyal": true,
+        "height": 175,
+        "category": "HELIX",
+        "adminEditAllowed": true
+    }
+]
