@@ -38,7 +38,7 @@ public record SpaceMarineDto(
         UserDto owner,
 
         @Schema(example = "true")
-        @JsonProperty(value = "admin_edit_allowed", required = true)
+        @JsonProperty(value = "adminEditAllowed", required = true)
         boolean adminEditAllowed
 ) {
 }

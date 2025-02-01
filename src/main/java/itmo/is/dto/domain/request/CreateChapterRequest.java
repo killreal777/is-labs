@@ -10,11 +10,11 @@ public record CreateChapterRequest(
         String name,
 
         @Schema(example = "Klimenkov's Legion")
-        @JsonProperty(value = "parent_legion", required = false)
+        @JsonProperty(value = "parentLegion", required = false)
         String parentLegion,
 
         @Schema(example = "false")
-        @JsonProperty(value = "admin_edit_allowed", required = true)
+        @JsonProperty(value = "adminEditAllowed", required = true)
         boolean adminEditAllowed
 ) {
 }

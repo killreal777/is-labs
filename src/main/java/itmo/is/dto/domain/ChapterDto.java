@@ -15,18 +15,18 @@ public record ChapterDto(
         String name,
 
         @Schema(example = "Klimenkov's Legion")
-        @JsonProperty(value = "parent_legion", required = false)
+        @JsonProperty(value = "parentLegion", required = false)
         String parentLegion,
 
         @Schema(example = "1000")
-        @JsonProperty(value = "marines_count", required = true)
+        @JsonProperty(value = "marinesCount", required = true)
         long marinesCount,
 
         @JsonProperty(value = "owner", required = true)
         UserDto owner,
 
         @Schema(example = "false")
-        @JsonProperty(value = "admin_edit_allowed", required = true)
+        @JsonProperty(value = "adminEditAllowed", required = true)
         boolean adminEditAllowed
 ) {
 }

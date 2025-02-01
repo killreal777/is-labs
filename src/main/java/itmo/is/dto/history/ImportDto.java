@@ -19,15 +19,15 @@ public record ImportDto(
         boolean success,
 
         @Schema(example = "5")
-        @JsonProperty(value = "objects_added", required = true)
+        @JsonProperty(value = "objectsAdded", required = true)
         Integer objectsAdded,
 
         @Schema(example = "2024-11-30T20:24:23.760031")
-        @JsonProperty(value = "started_at", required = true)
+        @JsonProperty(value = "startedAt", required = true)
         LocalDateTime startedAt,
 
         @Schema(example = "2024-11-30T20:24:24.233199")
-        @JsonProperty(value = "finished_at", required = true)
+        @JsonProperty(value = "finishedAt", required = true)
         LocalDateTime finishedAt
 ) {
 }

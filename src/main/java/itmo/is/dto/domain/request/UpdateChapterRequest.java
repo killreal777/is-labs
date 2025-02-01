@@ -10,7 +10,7 @@ public record UpdateChapterRequest(
         String name,
 
         @Schema(example = "ITMO Legion")
-        @JsonProperty(value = "parent_legion", required = false)
+        @JsonProperty(value = "parentLegion", required = false)
         String parentLegion
 ) {
 }
