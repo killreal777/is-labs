@@ -7,7 +7,7 @@ import itmo.is.mapper.EntityMapper;
 import itmo.is.model.domain.Chapter;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface ChapterMapper extends EntityMapper<ChapterDto, Chapter> {
     Chapter toEntity(CreateChapterRequest request);
 

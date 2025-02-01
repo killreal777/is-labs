@@ -5,6 +5,6 @@ import itmo.is.mapper.EntityMapper;
 import itmo.is.model.domain.Coordinates;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel = "spring")
+@Mapper
 public interface CoordinatesMapper extends EntityMapper<CoordinatesDto, Coordinates> {
 }
