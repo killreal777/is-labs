@@ -4,7 +4,7 @@
 
 **Spring**: Boot, Web, Data JPA, Security + JWT;
 
-AWS S3, SQL, PostgreSQL, Docker, Swagger, Maven
+AWS S3, PostgreSQL, Docker, Swagger, Maven
 
 ## API
 
